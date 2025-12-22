@@ -3,6 +3,7 @@ import {
   List,
   ListItemButton,
   ListItemIcon,
+  ListItem,
   ListItemText,
   Divider,
   Box,
@@ -22,7 +23,7 @@ import { useEffect } from "react";
 import { logout } from "../../utils/logout.jsx";
 import { useThemeMode } from "../../app/ThemeContext";
 
-const drawerWidth = 240;
+const drawerWidth = 200;
 
 export default function StudentSidebar({ mobileOpen, onClose }) {
   const { mode, toggleTheme } = useThemeMode();
@@ -34,6 +35,14 @@ export default function StudentSidebar({ mobileOpen, onClose }) {
       onClose();
     }
   }, [location.pathname, mode]);
+
+  const listContents = [
+    { title: 'Dashboard', icon: <DashboardIcon />, path: '/student' },
+    { title: 'Apply Leave', icon: <CalendarMonthIcon />, path: '/student/leave' },
+    { title: 'Apply Rebate', icon: <NoMealsIcon />, path: '/student/rebate' },
+    { title: 'Complaints', icon: <SaveAsIcon />, path: '/student/complaints' },
+    { title: 'Profile', icon: <PersonIcon/> ,path: '/student/profile'}
+  ]
 
   const drawerContent = (
     <>
@@ -49,40 +58,17 @@ export default function StudentSidebar({ mobileOpen, onClose }) {
 
       {/* MENU */}
       <List>
-        <ListItemButton component={NavLink} to="/student" sx={{display:"flex", alignItems:"center", justifyContent:"space-between" }}>
-          <ListItemIcon sx={{ minWidth: 50, color: "text.primary" }}>
-            <DashboardIcon />
-          </ListItemIcon>
-          <ListItemText primary="Dashboard" />
-        </ListItemButton>
-
-        <ListItemButton component={NavLink} to="/student/leave">
-          <ListItemIcon sx={{ minWidth: 50, color: "text.primary" }}>
-            <CalendarMonthIcon />
-          </ListItemIcon>
-          <ListItemText primary="Apply Leave" />
-        </ListItemButton>
-
-        <ListItemButton component={NavLink} to="/student/rebate">
-          <ListItemIcon sx={{ minWidth: 50, color: "text.primary" }}>
-            <NoMealsIcon/>
-          </ListItemIcon>
-          <ListItemText primary="Apply Rebate" />
-        </ListItemButton>
-
-        <ListItemButton component={NavLink} to="/student/complaints">
-          <ListItemIcon sx={{ minWidth: 50, color: "text.primary" }}>
-            <SaveAsIcon/>
-          </ListItemIcon>
-          <ListItemText primary="Complaints" />
-        </ListItemButton>
-
-        <ListItemButton component={NavLink} to="/student/profile">
-          <ListItemIcon sx={{ minWidth: 50, color: "text.primary" }}>
-            <PersonIcon/>
-          </ListItemIcon>
-          <ListItemText primary="Profile" />
-        </ListItemButton>
+        {listContents.map((listElement) => (
+          <ListItem key={listElement.title} disablePadding sx={{ marginBottom: '8px' }}>
+            <ListItemButton component={NavLink} to={listElement.path} sx={{display:"flex", alignItems:"center", justifyContent:"space-between"}}>
+              <ListItemIcon sx={{ minWidth: 50, color: "text.primary" }}>
+                {listElement.icon}
+              </ListItemIcon>
+              <ListItemText primary={listElement.title} sx={{ marginLeft: '-16px' }} />
+            </ListItemButton>
+            <Divider />
+          </ListItem>
+        ))}
       </List>
 
       {/* <Divider /> */}

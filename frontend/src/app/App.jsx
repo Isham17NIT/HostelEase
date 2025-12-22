@@ -3,36 +3,55 @@ import { Routes, Route } from "react-router-dom";
 // import ProtectedRoute from "../auth/ProtectedRoute"
 // import RootRedirect from "./RootRedirect"
 
-// import AdminLayout from "../admin/layout/AdminLayout";
-import StudentLayout from "../student/layout/StudentLayout";
+import AdminLayout from "../admin/layout/AdminLayout";
+// import StudentLayout from "../student/layout/StudentLayout";
 
-// import AdminDashboard from "../admin/pages/AdminDashboard";
-// import LeaveApprovals from "../admin/pages/LeaveApprovals";
-// import ManageComplaints from "../admin/pages/ManageComplaints";
-// import RebateApprovals from "../admin/pages/RebateApprovals";
-// import RegisterStudent from "../admin/pages/RegisterStudent";
+import AdminDashboard from "../admin/pages/AdminDashboard";
+import LeaveApprovals from "../admin/pages/LeaveApprovals";
+import ManageComplaints from "../admin/pages/ManageComplaints";
+import RebateApprovals from "../admin/pages/RebateApprovals";
+import RegisterStudent from "../admin/pages/RegisterStudent";
+import UpdateStudent from "../admin/pages/UpdateStudent";
 // import AdminProfile from "../admin/pages/AdminProfile";
 
-import Dashboard from "../student/pages/Dashboard";
-import ApplyLeave from "../student/pages/ApplyLeave";
-import ApplyRebate from "../student/pages/ApplyRebate";
-import Complaints from "../student/pages/Complaints";
-import Profile from "../student/pages/Profile";
+// import Dashboard from "../student/pages/Dashboard";
+// import ApplyLeave from "../student/pages/ApplyLeave";
+// import ApplyRebate from "../student/pages/ApplyRebate";
+// import Complaints from "../student/pages/Complaints";
+// import Profile from "../student/pages/Profile";
 
 export default function App() {
   return (
     // student testing
+    // <Routes>
+    //   <Route
+    //       path="/student"
+    //       element={
+    //           <StudentLayout />
+    //       }>
+    //     <Route index element={<Dashboard />} />
+    //     <Route path="leave" element={<ApplyLeave />} />
+    //     <Route path="rebate" element={<ApplyRebate />} />
+    //     <Route path="complaints" element={<Complaints />} />
+    //     <Route path="profile" element={<Profile />} />
+    //   </Route>
+    // </Routes>
+
+    // admin testing
     <Routes>
       <Route
-          path="/student"
+          path="/admin"
           element={
-              <StudentLayout />
+              <AdminLayout />
           }>
-        <Route index element={<Dashboard />} />
-        <Route path="leave" element={<ApplyLeave />} />
-        <Route path="rebate" element={<ApplyRebate />} />
-        <Route path="complaints" element={<Complaints />} />
-        <Route path="profile" element={<Profile />} />
+        <Route index element={<AdminDashboard />} />
+        <Route path="leave" element={<LeaveApprovals />} />
+        <Route path="rebate" element={<RebateApprovals />} />
+        <Route path="complaints" element={<ManageComplaints />} />
+        <Route path="register_student" element={<RegisterStudent />} />
+        <Route path="update_student" element={<UpdateStudent />} />
+
+        {/* <Route path="profile" element={<Profile />} /> */}
       </Route>
     </Routes>
       // <Routes>
@@ -66,9 +85,9 @@ export default function App() {
       //     }
       //   >
       //     <Route index element={<AdminDashboard />} />
-      //     <Route path="leave_approvals" element={<LeaveApprovals />} />
+      //     <Route path="leave" element={<LeaveApprovals />} />
       //     <Route path="complaints" element={<ManageComplaints />} />
-      //     <Route path="rebates" element={<RebateApprovals />} />
+      //     <Route path="rebate" element={<RebateApprovals />} />
       //     <Route path="register_student" element={<RegisterStudent/>} />
       //     <Route path="profile" element={<AdminProfile />} />
 

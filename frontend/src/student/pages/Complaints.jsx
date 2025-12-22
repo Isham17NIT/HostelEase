@@ -10,7 +10,15 @@ import {
   FormControl,
   InputLabel,
   Select,
-  MenuItem,
+  MenuItem, 
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TablePagination,
+  TableRow
 } from "@mui/material";
 
 export default function Complaints() {
@@ -22,7 +30,7 @@ export default function Complaints() {
   return (
     <Box sx={{ maxWidth: 900 }}>
       {/* ================= REGISTER COMPLAINT ================= */}
-      <Typography variant="h6" gutterBottom>
+      <Typography variant="h5" gutterBottom>
         Register a Complaint
       </Typography>
 
@@ -71,15 +79,15 @@ export default function Complaints() {
         </Button>
       </Stack>
 
-      <Divider sx={{ mb: 3 }} />
+      {/* <Divider sx={{ mb: 3 }} /> */}
 
       {/* ================= MY COMPLAINTS ================= */}
-      <Typography variant="h5" gutterBottom>
+      {/* <Typography variant="h5" gutterBottom>
         My Complaints
-      </Typography>
+      </Typography> */}
 
       {/* Header */}
-      <Box
+      {/* <Box
         sx={{
           display: "grid",
           gridTemplateColumns: "120px 1fr 150px",
@@ -88,14 +96,14 @@ export default function Complaints() {
         }}
       >
         <Typography>ID</Typography>
-        <Typography>Issue</Typography>
-        <Typography>Status</Typography>
-      </Box>
+        <Typography>Created At</Typography>
+        <Typography>Category</Typography>
+      </Box> */}
 
-      <Divider />
+      {/* <Divider /> */}
 
       {/* Rows */}
-      {[
+      {/* {[
         { id: "CMP001", issue: "Fan not working", status: "Resolved" },
         { id: "CMP002", issue: "Water leakage", status: "In Progress" },
         { id: "CMP003", issue: "Broken chair", status: "Pending" },
@@ -120,9 +128,10 @@ export default function Complaints() {
                 ? "warning"
                 : "default"
             }
-          />
-        </Box>
-      ))}
+          /> */}
+        {/* </Box> */}
+      {/* ))} */}
+
     </Box>
   );
 }

@@ -1,4 +1,4 @@
-export default function AdminDashboard(){
+export default function UpdateStudent(){
     return (
         <>
         </>
