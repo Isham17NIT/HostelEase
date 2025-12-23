@@ -12,6 +12,7 @@ import ManageComplaints from "../admin/pages/ManageComplaints";
 import RebateApprovals from "../admin/pages/RebateApprovals";
 import RegisterStudent from "../admin/pages/RegisterStudent";
 import UpdateStudent from "../admin/pages/UpdateStudent";
+import ManageRooms from "../admin/pages/ManageRooms";
 // import AdminProfile from "../admin/pages/AdminProfile";
 
 // import Dashboard from "../student/pages/Dashboard";
@@ -19,6 +20,7 @@ import UpdateStudent from "../admin/pages/UpdateStudent";
 // import ApplyRebate from "../student/pages/ApplyRebate";
 // import Complaints from "../student/pages/Complaints";
 // import Profile from "../student/pages/Profile";
+// import RoomChange from "../student/pages/RoomChange";
 
 export default function App() {
   return (
@@ -34,6 +36,7 @@ export default function App() {
     //     <Route path="rebate" element={<ApplyRebate />} />
     //     <Route path="complaints" element={<Complaints />} />
     //     <Route path="profile" element={<Profile />} />
+    //     <Route path="room" element={<RoomChange />} />
     //   </Route>
     // </Routes>
 
@@ -50,6 +53,7 @@ export default function App() {
         <Route path="complaints" element={<ManageComplaints />} />
         <Route path="register_student" element={<RegisterStudent />} />
         <Route path="update_student" element={<UpdateStudent />} />
+        <Route path="rooms" element={<ManageRooms />} />
 
         {/* <Route path="profile" element={<Profile />} /> */}
       </Route>

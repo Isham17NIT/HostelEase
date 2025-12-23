@@ -17,6 +17,7 @@ import PersonIcon from '@mui/icons-material/Person';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import EditDocumentIcon from '@mui/icons-material/EditDocument';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
+import MeetingRoomIcon from '@mui/icons-material/MeetingRoom';
 
 import { NavLink, useLocation } from "react-router-dom";
 import { useEffect } from "react";
@@ -43,7 +44,8 @@ export default function AdminSidebar({ mobileOpen, onClose }) {
     { title: 'Rebates', icon: <NoMealsIcon />, path: '/admin/rebate' },
     { title: 'Complaints', icon: <MenuBookIcon />, path: '/admin/complaints' },
     { title: 'Add new Student', icon: <PersonIcon/> ,path: '/admin/register_student'},
-    { title: 'Update Student Info', icon: <EditDocumentIcon/> ,path: '/admin/update_student'},
+    { title: 'Update Student', icon: <EditDocumentIcon/> ,path: '/admin/update_student'},
+    { title: 'Manage Rooms', icon: <MeetingRoomIcon/> ,path: '/admin/rooms'}
   ]
 
   const drawerContent = (
