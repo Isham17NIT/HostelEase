@@ -57,7 +57,7 @@ const initialComplaints = [
   },
 ];
 
-/* ================= Expandable Text ================= */
+/* Expandable Text  */
 function ExpandableText({ text, lines = 2 }) {
   const [expanded, setExpanded] = useState(false);
   const isLong = text.length > 80;
@@ -89,7 +89,6 @@ function ExpandableText({ text, lines = 2 }) {
   );
 }
 
-/* ================= Main Component ================= */
 export default function ManageComplaints() {
   const isMobile = useMediaQuery("(max-width:768px)");
   const [complaints, setComplaints] = useState(initialComplaints);
@@ -108,7 +107,7 @@ export default function ManageComplaints() {
         Complaints
       </Typography>
 
-      {/* 📱 MOBILE VIEW */}
+      {/* MOBILE VIEW */}
       {isMobile ? (
         <Stack spacing={2}>
           {complaints.map((c) => (
@@ -162,7 +161,7 @@ export default function ManageComplaints() {
           ))}
         </Stack>
       ) : (
-        /* 💻 DESKTOP VIEW */
+        /* DESKTOP VIEW */
         <Card>
           <CardContent>
             <TableContainer component={Paper}>

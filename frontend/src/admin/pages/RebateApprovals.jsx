@@ -61,7 +61,7 @@ export default function ManageRebates() {
         Rebates
       </Typography>
 
-      {/* 📱 MOBILE VIEW */}
+      {/* MOBILE VIEW */}
       {isMobile ? (
         <Stack spacing={2}>
           {rebates.map((r) => (
@@ -135,7 +135,7 @@ export default function ManageRebates() {
           ))}
         </Stack>
       ) : (
-        /* 💻 DESKTOP VIEW */
+        /* DESKTOP VIEW */
         <Card>
           <CardContent>
             <TableContainer component={Paper}>

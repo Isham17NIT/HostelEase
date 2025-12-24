@@ -40,7 +40,7 @@ export default function RegisterStudent() {
       }
 
       <Button variant="contained" sx={{ mt: 2 }}>
-        Register
+        ADD STUDENT
       </Button>
     </Box>
   );

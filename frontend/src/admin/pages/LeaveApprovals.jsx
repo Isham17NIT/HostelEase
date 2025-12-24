@@ -66,7 +66,7 @@ export default function LeaveApprovals() {
         Leaves
       </Typography>
 
-      {/* 📱 MOBILE VIEW */}
+      {/* MOBILE VIEW */}
       {isMobile ? (
         <Stack spacing={2}>
           {leaves.map((row) => (
@@ -80,10 +80,6 @@ export default function LeaveApprovals() {
 
                 <Typography variant="body2" mt={1}>
                   Applied on: {row.appliedOn}
-                </Typography>
-
-                <Typography variant="body2">
-                  Days: {row.days}
                 </Typography>
 
                 <Typography variant="body2" mt={1}>
@@ -127,7 +123,7 @@ export default function LeaveApprovals() {
           ))}
         </Stack>
       ) : (
-        /* 💻 DESKTOP VIEW */
+        /* DESKTOP VIEW */
         <Card>
           <CardContent>
             <TableContainer component={Paper}>
@@ -138,7 +134,6 @@ export default function LeaveApprovals() {
                     <TableCell><b>Roll No.</b></TableCell>
                     <TableCell><b>From Date</b></TableCell>
                     <TableCell><b>To Date</b></TableCell>
-                    <TableCell><b>No. of Days</b></TableCell>
                     <TableCell><b>Leave Address</b></TableCell>
                     <TableCell><b>Purpose</b></TableCell>
                     <TableCell><b>Status</b></TableCell>
@@ -153,7 +148,6 @@ export default function LeaveApprovals() {
                       <TableCell>{row.rollNo}</TableCell>
                       <TableCell>{row.fromDate}</TableCell>
                       <TableCell>{row.toDate}</TableCell>
-                      <TableCell>{row.days}</TableCell>
                       <TableCell>{row.address}</TableCell>
                       <TableCell>{row.purpose}</TableCell>
 

@@ -6,27 +6,31 @@ import {
   TextField,
   Button,
   Grid,
-  MenuItem,
-  Divider,
   Stack,
+  useTheme,
 } from "@mui/material";
 import { useState } from "react";
 
 export default function ManageRooms() {
-  // Check availability state
-  const [hostel, setHostel] = useState("");
+  const theme = useTheme();
+  const isDark = theme.palette.mode === "dark";
+
   const [roomNum, setRoomNum] = useState("");
 
-  // Add room state
-  const [newRoomNum, setNewRoomNum] = useState("");
-  const [status, setStatus] = useState("VACANT");
-
   const handleCheckAvailability = () => {
-    console.log("Check:", hostel, roomNum);
+    if (!roomNum) {
+      alert("Please enter a room number");
+      return;
+    }
+    console.log("Check availability for room:", roomNum);
   };
 
   const handleAddRoom = () => {
-    console.log("Add:", newRoomNum, status);
+    if (!roomNum) {
+      alert("Please enter a room number");
+      return;
+    }
+    console.log("Add room:", roomNum);
   };
 
   return (
@@ -34,11 +38,10 @@ export default function ManageRooms() {
       sx={{
         px: { xs: 2, sm: 3, md: 4 },
         py: { xs: 2, sm: 3 },
-        maxWidth: "1200px",
+        maxWidth: "800px",
         mx: "auto",
       }}
     >
-      {/* Page Title */}
       <Typography
         variant="h5"
         fontWeight="bold"
@@ -48,72 +51,59 @@ export default function ManageRooms() {
         Manage Rooms
       </Typography>
 
-      <Grid container spacing={{ xs: 2, md: 3 }}>
-        {/* ================= CHECK AVAILABILITY ================= */}
-        <Grid item xs={12} md={6}>
-          <Card sx={{ height: "100%" }}>
-            <CardContent>
-              <Typography variant="h6" mb={2}>
-                Check Room Availability
-              </Typography>
+      <Card>
+        <CardContent>
+          <Typography variant="h6" mb={2}>
+            Room Actions
+          </Typography>
 
-              <Stack spacing={2}>
+          <Stack spacing={3}>
+            <TextField
+              required
+              label="Room Number"
+              fullWidth
+              value={roomNum}
+              onChange={(e) => setRoomNum(e.target.value)}
+            />
 
-                <TextField
-                  required
-                  label="Room Number"
-                  type="text"
-                  fullWidth
-                  value={roomNum}
-                  onChange={(e) => setRoomNum(e.target.value)}
-                />
-
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={6}>
                 <Button
-                  variant="contained"
                   size="large"
                   fullWidth
+                  sx={{
+                    bgcolor: isDark ? "#1e40af" : "#2563eb",
+                    color: "white",
+                    "&:hover": {
+                      bgcolor: isDark ? "#1d4ed8" : "#1d4ed8",
+                    },
+                  }}
                   onClick={handleCheckAvailability}
                 >
                   Check Availability
                 </Button>
-              </Stack>
-            </CardContent>
-          </Card>
-        </Grid>
+              </Grid>
 
-        {/* ================= ADD ROOM ================= */}
-        <Grid item xs={12} md={6}>
-          <Card sx={{ height: "100%" }}>
-            <CardContent>
-              <Typography variant="h6" mb={2}>
-                Add Room
-              </Typography>
-
-              <Stack spacing={2}>
-                <TextField
-                  label="Room Number"
-                  type="text"
-                  fullWidth
-                  value={newRoomNum}
-                  required
-                  onChange={(e) => setNewRoomNum(e.target.value)}
-                />
-
+              <Grid item xs={12} sm={6}>
                 <Button
-                  variant="contained"
-                  color="success"
                   size="large"
                   fullWidth
+                  sx={{
+                    bgcolor: isDark ? "#15803d" : "#16a34a",
+                    color: "white",
+                    "&:hover": {
+                      bgcolor: isDark ? "#16a34a" : "#15803d",
+                    },
+                  }}
                   onClick={handleAddRoom}
                 >
                   Add Room
                 </Button>
-              </Stack>
-            </CardContent>
-          </Card>
-        </Grid>
-      </Grid>
-
+              </Grid>
+            </Grid>
+          </Stack>
+        </CardContent>
+      </Card>
     </Box>
   );
 }
