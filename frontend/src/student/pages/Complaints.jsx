@@ -47,11 +47,11 @@ export default function Complaints() {
             onChange={(e) => setType(e.target.value)}
             required
           >
-            <MenuItem value="electricity">Electricity</MenuItem>
-            <MenuItem value="water">Water</MenuItem>
-            <MenuItem value="furniture">Furniture</MenuItem>
-            <MenuItem value="cleaning">Cleaning</MenuItem>
-            <MenuItem value="internet">WiFi/LAN</MenuItem>
+            <MenuItem value="ELECTRICITY">Electricity</MenuItem>
+            <MenuItem value="WATER">Water</MenuItem>
+            <MenuItem value="FURNITURE">Furniture</MenuItem>
+            <MenuItem value="CLEANING">Cleaning</MenuItem>
+            <MenuItem value="INTERNET">WiFi/LAN</MenuItem>
           </Select>
         </FormControl>
 
