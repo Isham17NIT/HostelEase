@@ -8,16 +8,6 @@ const complaintSchema = new mongoose.Schema(
       required: true
     },
 
-    roomNumber: { //will come from logged in student's info
-      type: String,
-      required: true
-    },
-
-    phoneNumber:{ //student's phone number will come from logged in info
-        type: String,
-        required: true
-    },
-
     type: {
       type: String,
       enum: ["ELECTRICITY","WATER","FURNITURE","CLEANING","INTERNET"],

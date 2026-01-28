@@ -16,7 +16,6 @@ import NoMealsIcon from '@mui/icons-material/NoMeals';
 import SaveAsIcon from '@mui/icons-material/SaveAs';
 import PersonIcon from '@mui/icons-material/Person';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
-import MeetingRoomIcon from '@mui/icons-material/MeetingRoom';
 
 import { NavLink, useLocation } from "react-router-dom";
 import { useEffect } from "react";

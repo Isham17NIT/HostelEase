@@ -4,7 +4,9 @@ const roomSchema = mongoose.Schema({
     roomNum:{
         type: String,
         required: true,
-        unique: true
+        unique: true,
+        trim: true,
+        lowercase: true,
     },    
     status: {
         type: String,

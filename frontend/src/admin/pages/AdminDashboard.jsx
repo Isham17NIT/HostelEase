@@ -53,7 +53,6 @@ export default function AdminDashboard() {
 
   return (
     <Box sx={{ p: { xs: 2, md: 4 } }}>
-      {/* PAGE TITLE */}
       <Typography variant="h4" fontWeight="bold" mb={3}>
         Dashboard
       </Typography>
@@ -89,7 +88,6 @@ export default function AdminDashboard() {
                     </Typography>
                   </Box>
 
-                  {/* ICON CIRCLE */}
                   <Box
                     sx={{
                       width: 48,

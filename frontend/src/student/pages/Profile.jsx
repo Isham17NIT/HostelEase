@@ -20,7 +20,6 @@ export default function Profile() {
   const userInfo = {
     name: "Isham",
     rollNum: 123123231,
-    hostel: "Kalpana Chawla",
     roomNum: 103,
     phoneNum: "1234567890",
     address: "Street XYZ, ABC City, Country",

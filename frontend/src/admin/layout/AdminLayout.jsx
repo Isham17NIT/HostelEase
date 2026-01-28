@@ -23,7 +23,6 @@ export default function AdminLayout({ children }) {
         onClose={() => setMobileOpen(false)}
       />
 
-      {/* MAIN CONTENT */}
       <Box
         component="main"
         sx={{
@@ -32,10 +31,8 @@ export default function AdminLayout({ children }) {
           ml: { md: "240px" }, // sidebar width
         }}
       >
-        {/* Push content below AppBar on mobile */}
         <Toolbar sx={{ display: { xs: "block", md: "none" } }} />
 
-        {/* to render child routes: */}
         <Outlet/> 
       </Box>
     </Box>
