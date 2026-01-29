@@ -1,4 +1,4 @@
-# Hostel Complaint Management System
+# HostelEase
 
 ## Problem Statement
 Managing hostel complaints, leave requests, and student-related issues manually is inefficient, error-prone, and lacks transparency. Hostel administrators and students need a centralized platform to streamline complaint registration, leave and rebate applications and administrative approvals, thus ensuring accountability and timely resolution.

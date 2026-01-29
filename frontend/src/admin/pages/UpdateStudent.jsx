@@ -12,15 +12,15 @@ import { useState } from "react";
 
 const FIELD_CONFIG = {
   roomNumber: {
-    label: "New Room Number",
+    label: "Room Number",
     type: "text",
   },
   phoneNumber: {
-    label: "New Phone Number",
-    type: "tel",
+    label: "Phone Number",
+    type: "text",
   },
   address: {
-    label: "New Address",
+    label: "Address",
     type: "text",
     multiline: true,
     rows: 3,
@@ -38,39 +38,55 @@ const FIELD_CONFIG = {
 export default function UpdateStudent() {
   // UPDATE STATES
   const [rollNumber, setRollNumber] = useState("");
-  const [selectedField, setSelectedField] = useState("");
-  const [value, setValue] = useState("");
+  const [selectedFields, setSelectedFields] = useState([]); // array of field keys
+  const [fieldValues, setFieldValues] = useState({});
 
   // DELETE STATES
   const [deleteRollNumber, setDeleteRollNumber] = useState("");
 
+  // Handle checkbox select/deselect
+  const handleFieldSelect = (key) => {
+    setSelectedFields((prev) =>
+      prev.includes(key) ? prev.filter((f) => f !== key) : [...prev, key]
+    );
+  };
+
+  // Handle input change for each field
+  const handleFieldChange = (key, value) => {
+    setFieldValues((prev) => ({ ...prev, [key]: value }));
+  };
+
   const handleUpdate = () => {
-    if (!rollNumber || !selectedField || !value) {
+    if (!rollNumber || selectedFields.length === 0) {
       alert("Please fill all required fields");
       return;
     }
-
-    console.log({
-      rollNumber,
-      field: selectedField,
-      value,
+    // Check all selected fields have values
+    for (const key of selectedFields) {
+      if (!fieldValues[key]) {
+        alert(`Please enter value for ${FIELD_CONFIG[key].label}`);
+        return;
+      }
+    }
+    // Prepare update object
+    const updateData = { rollNumber };
+    selectedFields.forEach((key) => {
+      updateData[key] = fieldValues[key];
     });
+    console.log(updateData);
+    // TODO: API call here
   };
 
   const handleDelete = () => {
-    if (!deleteRollNumber || !adminPassword) {
-      alert("Roll number and admin password are required");
+    if (!deleteRollNumber) {
+      alert("Roll number is required");
       return;
     }
-
     // API call here
     console.log({
       rollNumber: deleteRollNumber,
-      adminPassword,
     });
   };
-
-  const fieldConfig = FIELD_CONFIG[selectedField];
 
   return (
     <Box
@@ -99,38 +115,39 @@ export default function UpdateStudent() {
               onChange={(e) => setRollNumber(e.target.value)}
             />
 
-            <TextField
-              select
-              label="Select Field to Update"
-              fullWidth
-              required
-              margin="normal"
-              value={selectedField}
-              onChange={(e) => {
-                setSelectedField(e.target.value);
-                setValue("");
-              }}
-            >
-              <MenuItem value="roomNumber">Room Number</MenuItem>
-              <MenuItem value="phoneNumber">Phone Number</MenuItem>
-              <MenuItem value="address">Address</MenuItem>
-              <MenuItem value="fatherEmail">Father's Email</MenuItem>
-              <MenuItem value="motherEmail">Mother's Email</MenuItem>
-            </TextField>
+            <Typography variant="subtitle1" sx={{ mt: 2, mb: 1 }}>
+              Select fields to update:
+            </Typography>
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', mb: 2 }}>
+              {Object.entries(FIELD_CONFIG).map(([key, config]) => (
+                <label key={key} style={{ marginRight: 16, marginBottom: 8 }}>
+                  <input
+                    type="checkbox"
+                    checked={selectedFields.includes(key)}
+                    onChange={() => handleFieldSelect(key)}
+                  />
+                  {config.label}
+                </label>
+              ))}
+            </Box>
 
-            {fieldConfig && (
-              <TextField
-                label={fieldConfig.label}
-                type={fieldConfig.type}
-                fullWidth
-                required
-                margin="normal"
-                multiline={fieldConfig.multiline}
-                rows={fieldConfig.rows}
-                value={value}
-                onChange={(e) => setValue(e.target.value)}
-              />
-            )}
+            {selectedFields.map((key) => {
+              const config = FIELD_CONFIG[key];
+              return (
+                <TextField
+                  key={key}
+                  label={config.label}
+                  type={config.type}
+                  fullWidth
+                  required
+                  margin="normal"
+                  multiline={config.multiline}
+                  rows={config.rows}
+                  value={fieldValues[key] || ""}
+                  onChange={(e) => handleFieldChange(key, e.target.value)}
+                />
+              );
+            })}
 
             <Button
               fullWidth
