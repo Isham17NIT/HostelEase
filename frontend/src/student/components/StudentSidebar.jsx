@@ -42,7 +42,6 @@ export default function StudentSidebar({ mobileOpen, onClose }) {
     { title: 'Apply Rebate', icon: <NoMealsIcon />, path: '/student/rebate' },
     { title: 'Complaints', icon: <SaveAsIcon />, path: '/student/complaints' },
     { title: 'Profile', icon: <PersonIcon/> ,path: '/student/profile'},
-    { title: 'Room Change', icon: <PersonIcon/> ,path: '/student/room'}
   ]
 
   const drawerContent = (

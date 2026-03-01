@@ -10,17 +10,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 
 export const getPendingComplaints = asyncHandler(async (req, res) => {
-  const pendingComplaints = await Complaint.aggregate([
-    {
-      $match: { status: "PENDING" },
-      $lookup: {
-        from: "students",
-        localField: "studentID",
-        foreignField: "_id",
-        as: "studentInfo",
-      },
-    },
-  ]);
+  const pendingComplaints = await Complaint.find({status: "PENDING"})
   return res.status(200).json(new ApiResponse(200, pendingComplaints, "Pending complaints fetched successfully"));
 });
 
@@ -160,7 +150,7 @@ export const registerStudent = asyncHandler(async (req, res) => {
   return res.status(201).json(new ApiResponse(201, student, "Student registered successfully."));
 });
 
-// ------------------ user logic to be implemented in delete student--------------------------
+// ------------user logic to be implemented in delete student-----------------
 export const deleteStudent = asyncHandler(async (req, res) => {
   const { rollNum } = req.body;
   if (!rollNum) {
