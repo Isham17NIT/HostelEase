@@ -210,7 +210,7 @@ export const registerStudent = asyncHandler(async (req, res) => {
 });
 
 export const deleteStudent = asyncHandler(async (req, res) => {
-  const { rollNum } = req.body;
+  const { rollNum } = req.params;
   if (!rollNum) {
     throw new ApiError(400, "Roll number is required!");
   }
@@ -241,7 +241,8 @@ export const deleteStudent = asyncHandler(async (req, res) => {
 
 // -----------------need to check updateStudent-----------------------
 export const updateStudentDetails = asyncHandler(async (req, res) => {
-  const { rollNum, ...fieldsToUpdate } = req.body;
+  const { rollNum } = req.params;
+  const fieldsToUpdate = req.body;
 
   if (!rollNum || rollNum.trim() === "") {
     throw new ApiError(400, "Roll number is required!");

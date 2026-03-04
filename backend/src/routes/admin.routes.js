@@ -29,15 +29,19 @@ router.route("/complaints/update-status").post(updateComplaintStatus)
 
 // Leaves
 router.route("/leaves/pending").get(getPendingLeaves)
-router.route("/leaves/update-status").post(updateComplaintStatus)
+router.route("/leaves/update-status").post(updateLeaveStatus)
 
 // Rebates
-router.route("/rooms/check-availability").post(checkRoomAvailability);
+router.route("/rebates/pending").get(getPendingRebates)
+router.route("/rebates/update-status").post(updateRebateStatus)
+
+// Rooms
+router.route("/rooms/check-availability").get(checkRoomAvailability);
 router.route("/rooms/add").post(addRoom)
 
 // Student management
 router.route("/students/register").post(registerStudent);
-router.route("/students/delete").post(deleteStudent);
+router.route("/students/delete").delete(deleteStudent);
 router.route("/students/update").put(updateStudentDetails);
 
 export default router;
