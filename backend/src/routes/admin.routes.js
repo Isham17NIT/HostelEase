@@ -19,7 +19,7 @@ import { roleMiddleware } from "../middlewares/role.middleware.js";
 
 const router = express.Router()
 
-//protect all admin routes
+// protect all admin routes
 router.use(authMiddleware)
 router.use(roleMiddleware("ADMIN"))
 
