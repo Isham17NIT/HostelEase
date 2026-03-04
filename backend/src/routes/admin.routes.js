@@ -37,7 +37,7 @@ router.route("/rooms/add").post(addRoom)
 
 // Student management
 router.route("/students/register").post(registerStudent);
-router.route("/students/delete").delete(deleteStudent);
+router.route("/students/delete").post(deleteStudent);
 router.route("/students/update").put(updateStudentDetails);
 
 export default router;

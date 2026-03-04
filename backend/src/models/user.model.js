@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
-import bcrypt from "bcrypt"
-import jwt from "jsonwebtoken"
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
 const userSchema = new mongoose.Schema(
   {
@@ -27,12 +27,10 @@ const userSchema = new mongoose.Schema(
       type: String
     },
 
-    // Only for STUDENT users
     studentID: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Student",
-    },
-
+      ref: "Student"
+    }
   },
   { timestamps: true }
 );
@@ -63,6 +61,16 @@ userSchema.methods.generateRefreshToken = function() {
     process.env.REFRESH_TOKEN_SECRET,
     process.env.REFRESH_TOKEN_EXPIRY
   );
+};
+
+// Static method to generate a strong password
+userSchema.statics.generateStrongPassword = function(length = 10) {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+-=';
+  let password = '';
+  for (let i = 0; i < length; i++) {
+    password += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return password;
 };
 
 export const User = mongoose.model("User", userSchema);

@@ -56,6 +56,8 @@ export const login = asyncHandler(async (req, res) => {
 export const logout = asyncHandler(async(req, res) => {
   const userId = req.user.id;
 
+  // access token will be deleted from client's local storage in frontend logic
+
   // remove refreshtoken from user database
   const user = await User.findById(userId);
   if(!user){

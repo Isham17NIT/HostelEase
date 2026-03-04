@@ -8,6 +8,17 @@ import { Room } from "../models/room.model.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { ApiError } from "../utils/ApiError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
+import { User } from "../models/user.model.js";
+import nodemailer from 'nodemailer'
+import bcrypt from 'bcrypt'
+
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.MAIL_ID,
+    pass: process.env.MAIL_PASSWORD
+  }
+});
 
 export const getPendingComplaints = asyncHandler(async (req, res) => {
   const pendingComplaints = await Complaint.find({status: "PENDING"})
@@ -33,6 +44,19 @@ export const updateLeaveStatus = asyncHandler(async (req, res) => {
   );
   if (!updatedLeave) {
     throw new ApiError(404, "Leave request not found");
+  }
+  if(newStatus === "APPROVED") {  // then send mail to parents
+    // find student info
+    const student = await Student.findById(updateLeave.studentID)
+    if(student){
+      const mailOptions = {
+        from: process.env.MAIL_ID,
+        to: [student.fatherEmail, student.motherEmail],
+        subject: `Your ward ${student.name} has applied leave`,
+        text: `From: ${updatedLeave.fromDate}, To: ${updatedLeave.toDate}, Address: ${updatedLeave.address}, Purpose: ${updatedLeave.purpose}`
+      }
+    }
+
   }
   return res.status(200).json(new ApiResponse(200, updatedLeave, `Leave status updated to ${newStatus}`));
 });
@@ -93,6 +117,7 @@ export const registerStudent = asyncHandler(async (req, res) => {
     rollNum,
     name,
     dob,
+    email,
     roomNum,
     phoneNum,
     address,
@@ -107,6 +132,7 @@ export const registerStudent = asyncHandler(async (req, res) => {
     rollNum,
     name,
     dob,
+    email,
     roomNum,
     phoneNum,
     address,
@@ -118,11 +144,13 @@ export const registerStudent = asyncHandler(async (req, res) => {
   if(Object.values(fields).some(value => !value)){
     throw new ApiError(400, "All fields are required!");
   }
+
   // Check if student with same rollNum exists
   const existingStudent = await Student.findOne({ rollNum });
   if (existingStudent) {
     throw new ApiError(409, "Student with this roll number already exists.");
   }
+
   // Check if room exists and is vacant
   const room = await Room.findOne({ roomNum: roomNum.trim().toLowerCase() });
   if (!room) {
@@ -131,6 +159,7 @@ export const registerStudent = asyncHandler(async (req, res) => {
   if (room.status !== "VACANT") {
     throw new ApiError(409, "Room is not vacant.");
   }
+
   // Create student
   const student = await Student.create({
     rollNum,
@@ -144,13 +173,42 @@ export const registerStudent = asyncHandler(async (req, res) => {
     fatherEmail,
     motherEmail
   });
-  
+
   room.status = "OCCUPIED";
   await room.save();
+
+  const password = User.generateStrongPassword()
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  // Create user
+  const user = await User.create({
+    email,
+    password: hashedPassword,
+    role: "STUDENT",
+    studentID: student._id
+  })
+  
+  // email the password to student
+
+  const mailOptions = {
+    from: process.env.MAIL_ID,
+    to: email,
+    subject: 'Welcome to HostelEase',
+    text: `Your password is: ${ password } and Room No.: ${roomNum}. You can later change your password!` 
+  }
+
+  transporter.sendMail(mailOptions, (error, info)=>{
+    if(error){
+      console.log(error);
+    }
+    else{
+      console.log('Email sent: ' + info.response)
+    }
+  })
+  
   return res.status(201).json(new ApiResponse(201, student, "Student registered successfully."));
 });
 
-// ------------user logic to be implemented in delete student-----------------
 export const deleteStudent = asyncHandler(async (req, res) => {
   const { rollNum } = req.body;
   if (!rollNum) {
@@ -167,20 +225,33 @@ export const deleteStudent = asyncHandler(async (req, res) => {
     room.status = "VACANT";
     await room.save();
   }
+
   // Delete the student
   await Student.deleteOne({ rollNum });
+
+  // delete from user also
+  const user = await User.findOne({ studentID: student._id })
+  if(user){
+    await User.deleteOne({ studentID: student._id});
+  }
+
   return res.status(200).json(new ApiResponse(200, null, "Student deleted successfully!"));
 });
 
+
+// -----------------need to check updateStudent-----------------------
 export const updateStudentDetails = asyncHandler(async (req, res) => {
   const { rollNum, ...fieldsToUpdate } = req.body;
+
   if (!rollNum || rollNum.trim() === "") {
     throw new ApiError(400, "Roll number is required!");
   }
+
   const student = await Student.findOne({ rollNum });
   if (!student) {
     throw new ApiError(404, "Student not found!");
   }
+
   if (fieldsToUpdate.roomNum && fieldsToUpdate.roomNum !== student.roomNum) {
     const oldRoom = await Room.findOne({ roomNum: student.roomNum });
     if (oldRoom) {
