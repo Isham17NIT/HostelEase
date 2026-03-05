@@ -1,6 +1,6 @@
 // student specific opn
 import { asyncHandler } from "../utils/asyncHandler.js"
-import { ApiReponse } from "../utils/ApiResponse.js"
+import { ApiResponse } from "../utils/ApiResponse.js"
 import { ApiError } from "../utils/ApiError.js"
 import { Student } from "../models/student.model.js"
 import { Leave } from "../models/leave.model.js"

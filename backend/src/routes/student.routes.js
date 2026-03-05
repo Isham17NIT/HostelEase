@@ -25,7 +25,6 @@ router.route("/applyRebate").post(applyForRebate)
 router.route("/applyLeave").post(applyForLeave)
 router.route("/changePassword").post(changePassword)
 
-// get routes for rebate, complaint, leave
 router.route("/leaves").get(getLeaves)
 router.route("/rebates").get(getRebates)
 router.route("/complaints").get(getComplaints)

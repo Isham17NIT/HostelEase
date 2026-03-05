@@ -208,14 +208,17 @@ export const registerStudent = asyncHandler(async (req, res) => {
 
 export const deleteStudent = asyncHandler(async (req, res) => {
   const { rollNum } = req.params;
+
   if (!rollNum) {
     throw new ApiError(400, "Roll number is required!");
   }
+
   // Find student by rollNum
   const student = await Student.findOne({ rollNum });
   if (!student) {
     throw new ApiError(404, "Student not found!");
   }
+  
   // Free up the room
   const room = await Room.findOne({ roomNum: student.roomNum });
   if (room) {

@@ -1,6 +1,4 @@
-import { asyncHandler } from "./asyncHandler";
-
-export const clearAuth = asyncHandler(async(res, user)=>{
+export const clearAuth = async(res, user)=>{
     
     // remove refreshtoken from user database
     user.refreshToken = null;
@@ -12,4 +10,4 @@ export const clearAuth = asyncHandler(async(res, user)=>{
         secure: process.env.NODE_ENV === "production",
         sameSite: "strict"
     })
-})
+}
