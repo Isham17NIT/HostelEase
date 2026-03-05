@@ -25,7 +25,7 @@ export default function ApplyLeave() {
 
       <TextField
         fullWidth
-        label="Date of Return"
+        label="Leave Till"
         type="date"
         margin="normal"
         InputLabelProps={{ shrink: true }}

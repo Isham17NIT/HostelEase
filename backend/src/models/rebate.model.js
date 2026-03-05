@@ -13,7 +13,7 @@ const rebateSchema = new mongoose.Schema(
       required: true,
     },
 
-    joiningDate: {
+    toDate: {
       type: Date, 
       required: true,
     },

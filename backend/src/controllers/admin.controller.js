@@ -235,7 +235,6 @@ export const deleteStudent = asyncHandler(async (req, res) => {
   return res.status(200).json(new ApiResponse(200, null, "Student deleted successfully!"));
 });
 
-
 // -----------------need to check updateStudent-----------------------
 export const updateStudentDetails = asyncHandler(async (req, res) => {
   const { rollNum } = req.params;

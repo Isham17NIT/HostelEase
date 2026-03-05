@@ -3,6 +3,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { ApiError } from "../utils/ApiError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import jwt from "jsonwebtoken"
+import { clearAuth } from "../utils/clearAuth.js";
 
 // Login controller
 export const login = asyncHandler(async (req, res) => {
@@ -55,21 +56,12 @@ export const logout = asyncHandler(async(req, res) => {
   const userId = req.user.id;
 
   // access token will be deleted from client's local storage in frontend logic
-
-  // remove refreshtoken from user database
   const user = await User.findById(userId);
   if(!user){
     throw new ApiError(404, "User not found!")
   }
-  user.refreshToken = null;
-  await user.save()
-
-  // clear refresh token cookie
-  res.clearCookie("refreshToken", {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "strict"
-  })
+  
+  clearAuth(res, user)
 
   return res.status(200).json(new ApiResponse(200, null, "Logout successful"))
 

@@ -25,7 +25,7 @@ export default function ApplyRebate() {
 
       <TextField
         fullWidth
-        label="Date of Joining"
+        label="Rebate till"
         type="date"
         margin="normal"
         InputLabelProps={{ shrink: true }}

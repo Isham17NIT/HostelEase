@@ -7,7 +7,7 @@ const complaintSchema = new mongoose.Schema(
       ref: "Student",
       required: true
     },
-    // data that is accessed together must be stored together--> so need of frequent lookups for student details
+    // data that is accessed together must be stored together--> so no need of frequent lookups for student details
     phoneNum: {
       type: String,
       required: true
