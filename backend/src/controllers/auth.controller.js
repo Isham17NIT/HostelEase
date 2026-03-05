@@ -35,17 +35,15 @@ export const login = asyncHandler(async (req, res) => {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "strict",
-    maxAge: process.env.REFRESH_TOKEN_EXPIRY
+    maxAge: Number(process.env.REFRESH_TOKEN_EXPIRY)
   });
 
-  // Exclude refreshToken and password from user object
-  user = user.select("-password -refreshToken")
   return res.status(200).json(
     new ApiResponse(
       200,
       {
         accessToken,  // frontend will store this in local storage or session storage
-        user: user
+        user: {email: user.email, role: user.role, studentID: user.studentID}
       },
       "Login successful"
     )

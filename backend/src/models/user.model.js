@@ -20,7 +20,7 @@ const userSchema = new mongoose.Schema(
     role: {
       type: String,
       enum: ["ADMIN", "STUDENT"],
-      required: true,
+      required: true
     },
 
     refreshToken: {
@@ -35,13 +35,12 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-userSchema.pre("save", async function(next){
-  if(!this.isModified("password"))
-    return next();
-  const saltrounds = 10
-  this.password = await bcrypt.hash(this.password, saltrounds)
-  next()
-})
+userSchema.pre("save", async function(){
+if(!this.isModified("password"))
+    return;
+const saltrounds = 10
+this.password = await bcrypt.hash(this.password, saltrounds)
+});
 
 userSchema.methods.comparePassword = async function(password){
   return bcrypt.compare(password, this.password)
@@ -51,7 +50,7 @@ userSchema.methods.generateAccessToken = function() {
   return jwt.sign(
     { id: this._id, role: this.role },
     process.env.ACCESS_TOKEN_SECRET,
-    process.env.ACCESS_TOKEN_EXPIRY
+    {expiresIn: Number(process.env.ACCESS_TOKEN_EXPIRY)/1000} // it expects seconds
   );
 };
 
@@ -59,7 +58,7 @@ userSchema.methods.generateRefreshToken = function() {
   return jwt.sign(
     { id: this._id },
     process.env.REFRESH_TOKEN_SECRET,
-    process.env.REFRESH_TOKEN_EXPIRY
+    {expiresIn: Number(process.env.REFRESH_TOKEN_EXPIRY)/1000} // it expects seconds
   );
 };
 

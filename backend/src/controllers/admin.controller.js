@@ -10,7 +10,6 @@ import { ApiError } from "../utils/ApiError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { User } from "../models/user.model.js";
 import nodemailer from 'nodemailer'
-import bcrypt from 'bcrypt'
 
 const transporter = nodemailer.createTransport({
   service: 'gmail',
@@ -178,18 +177,16 @@ export const registerStudent = asyncHandler(async (req, res) => {
   await room.save();
 
   const password = User.generateStrongPassword()
-  const hashedPassword = await bcrypt.hash(password, 10);
 
   // Create user
   const user = await User.create({
     email,
-    password: hashedPassword,
+    password: password,
     role: "STUDENT",
     studentID: student._id
   })
   
   // email the password to student
-
   const mailOptions = {
     from: process.env.MAIL_ID,
     to: email,
@@ -197,7 +194,7 @@ export const registerStudent = asyncHandler(async (req, res) => {
     text: `Your password is: ${ password } and Room No.: ${roomNum}. You can later change your password!` 
   }
 
-  transporter.sendMail(mailOptions, (error, info)=>{
+  await transporter.sendMail(mailOptions, (error, info)=>{
     if(error){
       console.log(error);
     }
