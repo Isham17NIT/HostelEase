@@ -1,7 +1,6 @@
 import { Navigate } from "react-router-dom";
 
-const ProtectedRoute = ({ children, role }) => {
-  const user = JSON.parse(localStorage.getItem("user"));
+const ProtectedRoute = ({ user, role, children }) => {
 
   if (!user) 
     return <Navigate to="/login" />;
@@ -9,7 +8,7 @@ const ProtectedRoute = ({ children, role }) => {
   if (role && user.role !== role) 
     return <Navigate to="/login" />;
 
-  return children;
+  return children; // means show content as access is now allowed
 }
 
 export default ProtectedRoute
