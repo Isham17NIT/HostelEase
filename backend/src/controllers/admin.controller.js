@@ -1,4 +1,4 @@
-// admin specific opn 
+// admin specific opn
 
 import { Complaint } from "../models/complaint.model.js";
 import { Student } from "../models/student.model.js";
@@ -9,29 +9,49 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { ApiError } from "../utils/ApiError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { User } from "../models/user.model.js";
-import nodemailer from 'nodemailer'
+import nodemailer from "nodemailer";
 
 const transporter = nodemailer.createTransport({
-  service: 'gmail',
+  service: "gmail",
   auth: {
     user: process.env.MAIL_ID,
-    pass: process.env.MAIL_PASSWORD
-  }
+    pass: process.env.MAIL_PASSWORD,
+  },
 });
 
 export const getPendingComplaints = asyncHandler(async (req, res) => {
-  const pendingComplaints = await Complaint.find({status: "PENDING"})
-  return res.status(200).json(new ApiResponse(200, pendingComplaints, "Pending complaints fetched successfully"));
+  const pendingComplaints = await Complaint.find({ status: "PENDING" });
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        pendingComplaints,
+        "Pending complaints fetched successfully"
+      )
+    );
 });
 
 export const getPendingLeaves = asyncHandler(async (req, res) => {
   const pendingLeaves = await Leave.find({ status: "PENDING" });
-  return res.status(200).json(new ApiResponse(200, pendingLeaves, "Pending leaves fetched successfully"));
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, pendingLeaves, "Pending leaves fetched successfully")
+    );
 });
 
 export const getPendingRebates = asyncHandler(async (req, res) => {
   const pendingRebates = await Rebate.find({ status: "PENDING" });
-  return res.status(200).json(new ApiResponse(200, pendingRebates, "Pending rebates fetched successfully"));
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        pendingRebates,
+        "Pending rebates fetched successfully"
+      )
+    );
 });
 
 export const updateLeaveStatus = asyncHandler(async (req, res) => {
@@ -44,20 +64,24 @@ export const updateLeaveStatus = asyncHandler(async (req, res) => {
   if (!updatedLeave) {
     throw new ApiError(404, "Leave request not found");
   }
-  if(newStatus === "APPROVED") {  // then send mail to parents
+  if (newStatus === "APPROVED") {
+    // then send mail to parents
     // find student info
-    const student = await Student.findById(updateLeave.studentID)
-    if(student){
+    const student = await Student.findById(updateLeave.studentID);
+    if (student) {
       const mailOptions = {
         from: process.env.MAIL_ID,
         to: [student.fatherEmail, student.motherEmail],
         subject: `Your ward ${student.name} has applied leave`,
-        text: `From: ${updatedLeave.fromDate}, To: ${updatedLeave.toDate}, Address: ${updatedLeave.address}, Purpose: ${updatedLeave.purpose}`
-      }
+        text: `From: ${updatedLeave.fromDate}, To: ${updatedLeave.toDate}, Address: ${updatedLeave.address}, Purpose: ${updatedLeave.purpose}`,
+      };
     }
-
   }
-  return res.status(200).json(new ApiResponse(200, updatedLeave, `Leave status updated to ${newStatus}`));
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, updatedLeave, `Leave status updated to ${newStatus}`)
+    );
 });
 
 export const updateRebateStatus = asyncHandler(async (req, res) => {
@@ -70,7 +94,15 @@ export const updateRebateStatus = asyncHandler(async (req, res) => {
   if (!updatedRebate) {
     throw new ApiError(404, "Rebate request not found");
   }
-  return res.status(200).json(new ApiResponse(200, updatedRebate, `Rebate status updated to ${newStatus}`));
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        updatedRebate,
+        `Rebate status updated to ${newStatus}`
+      )
+    );
 });
 
 export const updateComplaintStatus = asyncHandler(async (req, res) => {
@@ -83,7 +115,11 @@ export const updateComplaintStatus = asyncHandler(async (req, res) => {
   if (!updatedComplaint) {
     throw new ApiError(404, "Complaint not found");
   }
-  return res.status(200).json(new ApiResponse(200, updatedComplaint, `Complaint marked as ${newStatus}`));
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, updatedComplaint, `Complaint marked as ${newStatus}`)
+    );
 });
 
 export const checkRoomAvailability = asyncHandler(async (req, res) => {
@@ -95,7 +131,15 @@ export const checkRoomAvailability = asyncHandler(async (req, res) => {
   if (!roomDetails) {
     throw new ApiError(404, "Room number not found");
   }
-  return res.status(200).json(new ApiResponse(200, { status: roomDetails.status }, "Room details fetched successfully"));
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        { status: roomDetails.status },
+        "Room details fetched successfully"
+      )
+    );
 });
 
 export const addRoom = asyncHandler(async (req, res) => {
@@ -108,7 +152,9 @@ export const addRoom = asyncHandler(async (req, res) => {
     throw new ApiError(409, "Room already exists");
   }
   const newRoom = await Room.create({ roomNum });
-  return res.status(201).json(new ApiResponse(201, newRoom, "Room added successfully"));
+  return res
+    .status(201)
+    .json(new ApiResponse(201, newRoom, "Room added successfully"));
 });
 
 export const registerStudent = asyncHandler(async (req, res) => {
@@ -123,7 +169,7 @@ export const registerStudent = asyncHandler(async (req, res) => {
     fatherName,
     motherName,
     fatherEmail,
-    motherEmail
+    motherEmail,
   } = req.body;
 
   // Check for missing fields
@@ -138,9 +184,9 @@ export const registerStudent = asyncHandler(async (req, res) => {
     fatherName,
     motherName,
     fatherEmail,
-    motherEmail
+    motherEmail,
   };
-  if(Object.values(fields).some(value => !value)){
+  if (Object.values(fields).some((value) => !value)) {
     throw new ApiError(400, "All fields are required!");
   }
 
@@ -170,40 +216,41 @@ export const registerStudent = asyncHandler(async (req, res) => {
     fatherName,
     motherName,
     fatherEmail,
-    motherEmail
+    motherEmail,
   });
 
   room.status = "OCCUPIED";
   await room.save();
 
-  const password = User.generateStrongPassword()
+  const password = User.generateStrongPassword();
 
   // Create user
   const user = await User.create({
     email,
     password: password,
     role: "STUDENT",
-    studentID: student._id
-  })
-  
+    studentID: student._id,
+  });
+
   // email the password to student
   const mailOptions = {
     from: process.env.MAIL_ID,
     to: email,
-    subject: 'Welcome to HostelEase',
-    text: `Your password is: ${ password } and Room No.: ${roomNum}. You can later change your password!` 
-  }
+    subject: "Welcome to HostelEase",
+    text: `Your password is: ${password} and Room No.: ${roomNum}. You can later change your password!`,
+  };
 
-  await transporter.sendMail(mailOptions, (error, info)=>{
-    if(error){
+  await transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
       console.log(error);
+    } else {
+      console.log("Email sent: " + info.response);
     }
-    else{
-      console.log('Email sent: ' + info.response)
-    }
-  })
-  
-  return res.status(201).json(new ApiResponse(201, student, "Student registered successfully."));
+  });
+
+  return res
+    .status(201)
+    .json(new ApiResponse(201, student, "Student registered successfully."));
 });
 
 export const deleteStudent = asyncHandler(async (req, res) => {
@@ -218,7 +265,7 @@ export const deleteStudent = asyncHandler(async (req, res) => {
   if (!student) {
     throw new ApiError(404, "Student not found!");
   }
-  
+
   // Free up the room
   const room = await Room.findOne({ roomNum: student.roomNum });
   if (room) {
@@ -230,12 +277,14 @@ export const deleteStudent = asyncHandler(async (req, res) => {
   await Student.deleteOne({ rollNum });
 
   // delete from user also
-  const user = await User.findOne({ studentID: student._id })
-  if(user){
-    await User.deleteOne({ studentID: student._id});
+  const user = await User.findOne({ studentID: student._id });
+  if (user) {
+    await User.deleteOne({ studentID: student._id });
   }
 
-  return res.status(200).json(new ApiResponse(200, null, "Student deleted successfully!"));
+  return res
+    .status(200)
+    .json(new ApiResponse(200, null, "Student deleted successfully!"));
 });
 
 // -----------------need to check updateStudent-----------------------
@@ -281,7 +330,9 @@ export const updateStudentDetails = asyncHandler(async (req, res) => {
 
   await student.save();
 
-  return res.status(200).json(new ApiResponse(200, student, "Student details updated successfully!"));
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, student, "Student details updated successfully!")
+    );
 });
-
-

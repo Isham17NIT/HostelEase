@@ -1,5 +1,5 @@
 // admin-only APIs
-import express from "express"
+import express from "express";
 import {
   getPendingComplaints,
   getPendingLeaves,
@@ -11,33 +11,33 @@ import {
   addRoom,
   registerStudent,
   deleteStudent,
-  updateStudentDetails
+  updateStudentDetails,
 } from "../controllers/admin.controller.js";
 
 import { authMiddleware } from "../middlewares/auth.middleware.js";
 import { roleMiddleware } from "../middlewares/role.middleware.js";
 
-const router = express.Router()
+const router = express.Router();
 
 // protect all admin routes
-router.use(authMiddleware)
-router.use(roleMiddleware("ADMIN"))
+router.use(authMiddleware);
+router.use(roleMiddleware("ADMIN"));
 
 // Complaints
-router.route("/complaints/pending").get(getPendingComplaints)
-router.route("/complaints/update-status").post(updateComplaintStatus)
+router.route("/complaints/pending").get(getPendingComplaints);
+router.route("/complaints/update-status").post(updateComplaintStatus);
 
 // Leaves
-router.route("/leaves/pending").get(getPendingLeaves)
-router.route("/leaves/update-status").post(updateLeaveStatus)
+router.route("/leaves/pending").get(getPendingLeaves);
+router.route("/leaves/update-status").post(updateLeaveStatus);
 
 // Rebates
-router.route("/rebates/pending").get(getPendingRebates)
-router.route("/rebates/update-status").post(updateRebateStatus)
+router.route("/rebates/pending").get(getPendingRebates);
+router.route("/rebates/update-status").post(updateRebateStatus);
 
 // Rooms
 router.route("/rooms/check-availability").get(checkRoomAvailability);
-router.route("/rooms/add").post(addRoom)
+router.route("/rooms/add").post(addRoom);
 
 // Student management
 router.route("/students/register").post(registerStudent);

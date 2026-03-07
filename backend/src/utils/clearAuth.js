@@ -4,10 +4,12 @@ export const clearAuth = async(res, user)=>{
     user.refreshToken = null;
     await user.save()
 
-    
-    res.clearCookie("refreshToken", {
+    const clearOptions = {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: "strict"
-    })
+    };
+
+    res.clearCookie("refreshToken", clearOptions)
+    res.clearCookie("accessToken", clearOptions)
 }

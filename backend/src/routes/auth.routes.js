@@ -1,4 +1,9 @@
-import { login, logout, refreshAccessToken, getCurrentUser } from "../controllers/auth.controller.js";
+import {
+  login,
+  logout,
+  refreshAccessToken,
+  getCurrentUser,
+} from "../controllers/auth.controller.js";
 import express from "express";
 import { authMiddleware } from "../middlewares/auth.middleware.js";
 
