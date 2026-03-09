@@ -40,12 +40,12 @@ export default function AdminSidebar({ mobileOpen, onClose }) {
 
   const listContents = [
     { title: 'Dashboard', icon: <DashboardIcon />, path: '/admin' },
-    { title: 'Leaves', icon: <CalendarMonthIcon />, path: '/admin/leave' },
-    { title: 'Rebates', icon: <NoMealsIcon />, path: '/admin/rebate' },
-    { title: 'Complaints', icon: <MenuBookIcon />, path: '/admin/complaints' },
-    { title: 'Add new Student', icon: <PersonIcon/> ,path: '/admin/register_student'},
-    { title: 'Update Student', icon: <EditDocumentIcon/> ,path: '/admin/update_student'},
-    { title: 'Manage Rooms', icon: <MeetingRoomIcon/> ,path: '/admin/rooms'}
+    { title: 'Leaves', icon: <CalendarMonthIcon />, path: '/admin/leave-approvals' },
+    { title: 'Rebates', icon: <NoMealsIcon />, path: '/admin/rebate-approvals' },
+    { title: 'Complaints', icon: <MenuBookIcon />, path: '/admin/manage-complaints' },
+    { title: 'Add new Student', icon: <PersonIcon/> ,path: '/admin/register-student'},
+    { title: 'Update Student', icon: <EditDocumentIcon/> ,path: '/admin/update-student'},
+    { title: 'Manage Rooms', icon: <MeetingRoomIcon/> ,path: '/admin/manage-rooms'}
   ]
 
   const drawerContent = (

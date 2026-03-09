@@ -1,13 +1,18 @@
 import api from "../api/axiosInstance.js";
-async function logout(navigate) {
+
+async function logout(setUser) {
   try {
-    // backend api call
+    // Call backend to invalidate refresh token
     await api.post("/auth/logout");
   } catch (error) {
     console.error("Logout API failed:", error);
+    // Continue with client-side cleanup even if API fails
   } finally {
-    localStorage.removeItem("user");
-    navigate("/login");
+    // Clear user context (which auto-clears localStorage)
+    setUser(null);
+    
+    // Redirect to login
+    window.location.href = "/login";
   }
 }
 

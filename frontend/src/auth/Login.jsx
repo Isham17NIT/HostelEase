@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Alert,
@@ -14,10 +14,13 @@ import {
 } from "@mui/material";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import { UserContext } from "../app/UserContext";
 import api from "../api/axiosInstance";
 
 function Login() {
   const navigate = useNavigate();
+  const { setUser } = useContext(UserContext);
+
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -51,13 +54,14 @@ function Login() {
 
       const user = response.data.data.user;
 
-      localStorage.setItem("user", JSON.stringify(user));
+      setUser(user); // auto saved to local storage
 
-      //navigate based on role
-      if (user.role === "ADMIN") 
+      // navigate based on role
+      if (user.role === "ADMIN") {
         navigate("/admin");
-      else
+      } else {
         navigate("/student");
+      }
     } catch (err) {
       setError(
         err.response?.data?.message ||

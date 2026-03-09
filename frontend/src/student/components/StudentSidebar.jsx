@@ -40,7 +40,7 @@ export default function StudentSidebar({ mobileOpen, onClose }) {
     { title: 'Dashboard', icon: <DashboardIcon />, path: '/student' },
     { title: 'Apply Leave', icon: <CalendarMonthIcon />, path: '/student/leave' },
     { title: 'Apply Rebate', icon: <NoMealsIcon />, path: '/student/rebate' },
-    { title: 'Complaints', icon: <SaveAsIcon />, path: '/student/complaints' },
+    { title: 'Complaints', icon: <SaveAsIcon />, path: '/student/complaint' },
     { title: 'Profile', icon: <PersonIcon/> ,path: '/student/profile'},
   ]
 

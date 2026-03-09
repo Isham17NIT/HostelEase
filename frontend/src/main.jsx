@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
 import { CssBaseline } from '@mui/material';
 import ThemeContextProvider from "./app/ThemeContext.jsx";
+import { UserProvider } from "./app/UserContext.jsx";
 
 import './index.css'
 import App from './app/App.jsx'
@@ -11,8 +12,10 @@ createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>
       <ThemeContextProvider>
-        <CssBaseline />
-        <App />
+        <UserProvider>
+          <CssBaseline />
+          <App />
+        </UserProvider>
       </ThemeContextProvider>
     </BrowserRouter>
   </StrictMode>

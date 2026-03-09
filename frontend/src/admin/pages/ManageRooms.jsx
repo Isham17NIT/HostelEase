@@ -10,27 +10,82 @@ import {
   useTheme,
 } from "@mui/material";
 import { useState } from "react";
+import api from "../../api/axiosInstance.js";
 
 export default function ManageRooms() {
   const theme = useTheme();
   const isDark = theme.palette.mode === "dark";
 
   const [roomNum, setRoomNum] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [msg, setMsg] = useState("")
 
-  const handleCheckAvailability = () => {
+  const handleCheckAvailability = async() => {
+
+    setMsg("")
+    setError("");
+
     if (!roomNum) {
-      alert("Please enter a room number");
       return;
     }
-    console.log("Check availability for room:", roomNum);
+
+    setLoading(true);
+
+    // backend api call
+    try{
+      const response = await api.post(
+        "admin/rooms/check-availability", 
+        {
+          roomNum
+        },
+        { withCredentials: true }
+      )
+
+      const roomStatus = response.data.data.status;
+      setMsg(`Room is ${roomStatus}`)        
+
+    }catch(error){
+      setMsg("")
+      setError(
+        error.response?.data?.message ||
+          "Room Check failed!",
+      );
+    }finally{
+      setLoading(false)
+    }
   };
 
-  const handleAddRoom = () => {
+  const handleAddRoom = async() => {
+    setMsg("")
+    setError("")
+
     if (!roomNum) {
-      alert("Please enter a room number");
       return;
     }
-    console.log("Add room:", roomNum);
+
+    setLoading(true)
+
+    //backend api call
+    try{
+      const response = await api.post(
+        "/admin/rooms/add",
+        {
+          roomNum
+        },
+        { withCredentials: true }
+      )
+      setMsg("Room added successfully")
+
+    }catch(error){
+      setMsg("")
+      setError(
+        error.response?.data?.message ||
+        "Add room failed!"
+      )
+    }finally{
+      setLoading(false)
+    }
   };
 
   return (
@@ -63,7 +118,11 @@ export default function ManageRooms() {
               label="Room Number"
               fullWidth
               value={roomNum}
-              onChange={(e) => setRoomNum(e.target.value)}
+              onChange={(e) => {
+                setRoomNum(e.target.value)
+                setMsg("")
+                setError("")
+              }}
             />
 
             <Grid container spacing={2}>
@@ -79,6 +138,7 @@ export default function ManageRooms() {
                     },
                   }}
                   onClick={handleCheckAvailability}
+                  disabled={loading}
                 >
                   Check Availability
                 </Button>
@@ -96,11 +156,22 @@ export default function ManageRooms() {
                     },
                   }}
                   onClick={handleAddRoom}
+                  disabled={loading}
                 >
                   Add Room
                 </Button>
               </Grid>
             </Grid>
+            {msg && (
+              <Typography color="primary" sx={{ mt: 2 }}>
+                {msg}
+              </Typography>
+            )}
+            {error && (
+              <Typography color="error" sx={{ mt: 2 }}>
+                {error}
+              </Typography>
+            )}
           </Stack>
         </CardContent>
       </Card>

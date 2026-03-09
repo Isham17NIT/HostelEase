@@ -240,13 +240,11 @@ export const registerStudent = asyncHandler(async (req, res) => {
     text: `Your password is: ${password} and Room No.: ${roomNum}. You can later change your password!`,
   };
 
-  await transporter.sendMail(mailOptions, (error, info) => {
-    if (error) {
-      console.log(error);
-    } else {
-      console.log("Email sent: " + info.response);
-    }
-  });
+  try {
+    await transporter.sendMail(mailOptions);
+  } catch (error) {
+    console.log(error);
+  }
 
   return res
     .status(201)

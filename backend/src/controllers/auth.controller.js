@@ -61,7 +61,7 @@ export const logout = asyncHandler(async (req, res) => {
     throw new ApiError(404, "User not found!");
   }
 
-  clearAuth(res, user);
+  await clearAuth(res, user);
 
   return res.status(200).json(new ApiResponse(200, null, "Logout successful"));
 });

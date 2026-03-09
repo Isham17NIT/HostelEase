@@ -1,4 +1,6 @@
+import { useContext } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
+import { UserContext } from "./UserContext";
 import Login from "../auth/Login";
 import ProtectedRoute from "../auth/ProtectedRoute";
 
@@ -20,7 +22,8 @@ import Complaints from "../student/pages/Complaints";
 import Profile from "../student/pages/Profile";
 
 export default function App() {
-  const user = JSON.parse(localStorage.getItem("user"));
+  const { user } = useContext(UserContext);
+
   return (
     <Routes>
       {/* Public routes */}
