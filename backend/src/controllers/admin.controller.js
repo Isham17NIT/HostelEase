@@ -67,7 +67,7 @@ export const updateLeaveStatus = asyncHandler(async (req, res) => {
   if (newStatus === "APPROVED") {
     // then send mail to parents
     // find student info
-    const student = await Student.findById(updateLeave.studentID);
+    const student = await Student.findById(updatedLeave.studentID);
     if (student) {
       const mailOptions = {
         from: process.env.MAIL_ID,

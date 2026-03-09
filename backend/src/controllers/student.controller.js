@@ -34,7 +34,7 @@ export const applyForLeave = asyncHandler(async (req, res) => {
   return res
     .status(201)
     .json(
-      new ApiReponse(201, leave, "Leave application submitted successfully!")
+      new ApiResponse(201, leave, "Leave application submitted successfully!")
     );
 });
 
@@ -61,7 +61,7 @@ export const applyForRebate = asyncHandler(async (req, res) => {
   return res
     .status(201)
     .json(
-      new ApiReponse(201, rebate, "Rebate application submitted successfully!")
+      new ApiResponse(201, rebate, "Rebate application submitted successfully!")
     );
 });
 
@@ -90,7 +90,7 @@ export const registerComplaint = asyncHandler(async (req, res) => {
 
   return res
     .status(201)
-    .json(new ApiReponse(201, complaint, "Complaint submitted successfully!"));
+    .json(new ApiResponse(201, complaint, "Complaint submitted successfully!"));
 });
 
 export const changePassword = asyncHandler(async (req, res) => {
@@ -129,9 +129,9 @@ export const getLeaves = asyncHandler(async (req, res) => {
 
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 10;
-  const leaves = paginate(
+  const leaves = await paginate(
     Leave,
-    { student: studentID },
+    { studentID },
     { fromDate: -1 },
     page,
     limit
@@ -139,7 +139,7 @@ export const getLeaves = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(new ApiReponse(200, leaves, "Fetched leaves successfully"));
+    .json(new ApiResponse(200, leaves, "Fetched leaves successfully"));
 });
 
 export const getRebates = asyncHandler(async (req, res) => {
@@ -151,9 +151,9 @@ export const getRebates = asyncHandler(async (req, res) => {
 
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 10;
-  const rebates = paginate(
+  const rebates = await paginate(
     Rebate,
-    { student: studentID },
+    { studentID },
     { fromDate: -1 },
     page,
     limit
@@ -161,7 +161,7 @@ export const getRebates = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(new ApiReponse(200, rebates, "Fetched rebates successfully"));
+    .json(new ApiResponse(200, rebates, "Fetched rebates successfully"));
 });
 
 export const getComplaints = asyncHandler(async (req, res) => {
@@ -173,9 +173,9 @@ export const getComplaints = asyncHandler(async (req, res) => {
 
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 10;
-  const complaints = paginate(
+  const complaints = await paginate(
     Complaint,
-    { student: studentID },
+    { studentID },
     { fromDate: -1 },
     page,
     limit
@@ -183,5 +183,5 @@ export const getComplaints = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(new ApiReponse(200, complaints, "Fetched complaints successfully"));
+    .json(new ApiResponse(200, complaints, "Fetched complaints successfully"));
 });

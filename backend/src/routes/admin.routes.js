@@ -36,12 +36,12 @@ router.route("/rebates/pending").get(getPendingRebates);
 router.route("/rebates/update-status").post(updateRebateStatus);
 
 // Rooms
-router.route("/rooms/check-availability").get(checkRoomAvailability);
+router.route("/rooms/check-availability").post(checkRoomAvailability);
 router.route("/rooms/add").post(addRoom);
 
 // Student management
 router.route("/students/register").post(registerStudent);
 router.route("/students/delete/:rollNum").delete(deleteStudent);
-router.route("/students/update").put(updateStudentDetails);
+router.route("/students/update/:rollNum").put(updateStudentDetails);
 
 export default router;

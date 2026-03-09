@@ -45,7 +45,7 @@ export const login = asyncHandler(async (req, res) => {
     getCookieOptions(process.env.ACCESS_TOKEN_EXPIRY)
   );
 
-  const userInfo = { email, role, studentID: user.studentID };
+  const userInfo = { email, role: user.role, studentID: user.studentID };
 
   return res
     .status(200)

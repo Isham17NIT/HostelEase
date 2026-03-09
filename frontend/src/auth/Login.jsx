@@ -37,7 +37,7 @@ function Login() {
         },
       );
 
-      const user = response.data.user;
+      const user = response.data.data.user;
 
       localStorage.setItem("user", JSON.stringify(user));
 
