@@ -1,12 +1,14 @@
-function logout() {
-  // const confirmLogout = window.confirm(
-  //   "Are you sure you want to sign out?"
-  // );
-
-  // if (!confirmLogout) return;
-
-  // localStorage.removeItem("user");
-  // window.location.href = "/login";
+import api from "../api/axiosInstance.js";
+async function logout(navigate) {
+  try {
+    // backend api call
+    await api.post("/auth/logout");
+  } catch (error) {
+    console.error("Logout API failed:", error);
+  } finally {
+    localStorage.removeItem("user");
+    navigate("/login");
+  }
 }
 
-export { logout }
+export { logout };

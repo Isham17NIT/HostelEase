@@ -63,7 +63,7 @@ export default function Complaints() {
           rows={4}
           value={desc}
           onChange={(e) => setDesc(e.target.value)}
-          inputProps={{ maxLength: 200 }}
+          InputProps={{ maxLength: 200 }}
           error={charCount > 200}
           helperText={`${charCount}/200 characters`}
           placeholder="Describe the issue briefly (max 200 characters)"
