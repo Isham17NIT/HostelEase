@@ -1,18 +1,38 @@
 import { createContext, useState, useEffect } from "react";
 
-// Step 1: Create the context
 export const UserContext = createContext();
 
-// Step 2: Create a Provider component
 export function UserProvider({ children }) {
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  // Load user from localStorage on app start
+  // validate session on app start
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
+    const initializeAuth = async () => {
+      const storedUser = localStorage.getItem("user");
+
+      if (!storedUser) {
+        setUser(null);
+        setLoading(false);
+        return;
+      }
+      try {
+        const response = await api.get("/auth/me");
+        const currentUser = response?.data?.data;
+
+        setUser({
+          email: currentUser?.email,
+          role: currentUser?.role,
+          studentID: currentUser?.studentID,
+        });
+      } catch (error) {
+        setUser(null);
+        localStorage.removeItem("user");
+      } finally {
+        setLoading(false);
+      }
+    };
+    initializeAuth();
   }, []);
 
   // Save user to localStorage whenever it changes

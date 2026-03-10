@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Box,
   Card,
@@ -15,47 +15,15 @@ import {
   Button,
   Stack,
   useMediaQuery,
+  CircularProgress,
+  Alert
 } from "@mui/material";
+import api from "../../api/axiosInstance.js";
 
 const STATUS_COLORS = {
   PENDING: "warning",
   RESOLVED: "success",
 };
-
-const initialComplaints = [
-  {
-    _id: "CMP001",
-    createdAt: "2025-01-10",
-    rollNum: "CS23B001",
-    phone: "9876543210",
-    room: "103",
-    type: "Electricity",
-    description:
-      "Fan not working properly. It makes noise and stops intermittently, causing inconvenience especially at night.",
-    status: "PENDING",
-  },
-  {
-    _id: "CMP002",
-    createdAt: "2025-01-12",
-    rollNum: "CS23B045",
-    phone: "9123456789",
-    room: "210",
-    type: "Water",
-    description: "Tap leakage near the wash basin.",
-    status: "RESOLVED",
-  },
-  {
-    _id: "CMP003",
-    createdAt: "2025-01-13",
-    rollNum: "CS23B078",
-    phone: "9012345678",
-    room: "211",
-    type: "Water",
-    description:
-      "Low water pressure in the bathroom due to possible blockage in the pipeline connected to the overhead tank.",
-    status: "PENDING",
-  },
-];
 
 /* Expandable Text  */
 function ExpandableText({ text, lines = 2 }) {
@@ -91,14 +59,60 @@ function ExpandableText({ text, lines = 2 }) {
 
 export default function ManageComplaints() {
   const isMobile = useMediaQuery("(max-width:768px)");
-  const [complaints, setComplaints] = useState(initialComplaints);
+  const [complaints, setComplaints] = useState([]);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [updatingId, setUpdatingId] = useState("");
 
-  const updateStatus = (id, newStatus) => {
-    setComplaints((prev) =>
-      prev.map((c) =>
-        c._id === id ? { ...c, status: newStatus } : c
-      )
-    );
+  const getInitialComplaints = async () => {
+    setError("");
+    setLoading(true);
+    // backend api call
+    try {
+      const response = await api.get("/admin/complaints/pending", {
+        withCredentials: true,
+      });
+      const pendingComplaints = response?.data?.data;
+      setComplaints(Array.isArray(pendingComplaints) ? pendingComplaints : []);
+    } catch (error) {
+      setError(
+        error.response?.data?.message ||
+          "Error while fetching pending complaints",
+      );
+      setComplaints([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    getInitialComplaints();
+  }, []);
+
+  const handleResolve = async (complaintId) => {
+    setError("");
+    setUpdatingId(complaintId);
+
+    try {
+      const response = await api.post(
+        "/admin/complaints/update-status",
+        { complaintId, newStatus: "RESOLVED" },
+        { withCredentials: true },
+      );
+      const updatedComplaint = response.data.data;
+      setComplaints((prev) => 
+        updatedComplaint.status === "RESOLVED"
+          ? prev.filter((c) => c._id !== complaintId)
+          : prev
+      );
+    } catch (error) {
+      setError(
+        error?.response?.data?.message ||
+          "Error while updating complaint status",
+      );
+    } finally {
+      setUpdatingId("");
+    }
   };
 
   return (
@@ -107,8 +121,21 @@ export default function ManageComplaints() {
         Complaints
       </Typography>
 
+      {error && (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {error}
+        </Alert>
+      )}
+
       {/* MOBILE VIEW */}
-      {isMobile ? (
+      {loading ? 
+      (
+        <Box py={6} display="flex" justifyContent="center">
+          <CircularProgress />
+        </Box>
+      ) : complaints.length===0 ? (
+        <Alert severity="info">No pending complaints found</Alert>
+      ) : isMobile ? (
         <Stack spacing={2}>
           {complaints.map((c) => (
             <Card key={c._id}>
@@ -116,11 +143,11 @@ export default function ManageComplaints() {
                 <Typography fontWeight="bold">{c._id}</Typography>
 
                 <Typography variant="body2" color="text.secondary">
-                  Room {c.room} • {c.type}
+                  Room {c.roomNum} • {c.type}
                 </Typography>
 
                 <Box mt={1}>
-                  <ExpandableText text={c.description} />
+                  <ExpandableText text={c.desc} />
                 </Box>
 
                 <Typography
@@ -129,15 +156,10 @@ export default function ManageComplaints() {
                   display="block"
                   mt={1}
                 >
-                  {c.createdAt} | {c.rollNum}
+                  {c.createdAt} | {c.studentID} | {c.phoneNum}
                 </Typography>
 
-                <Stack
-                  direction="row"
-                  spacing={1}
-                  mt={2}
-                  alignItems="center"
-                >
+                <Stack direction="row" spacing={1} mt={2} alignItems="center">
                   <Chip
                     label={c.status}
                     color={STATUS_COLORS[c.status]}
@@ -148,9 +170,7 @@ export default function ManageComplaints() {
                     <Button
                       size="small"
                       variant="outlined"
-                      onClick={() =>
-                        updateStatus(c._id, "RESOLVED")
-                      }
+                      onClick={handleResolve}
                     >
                       Resolve
                     </Button>
@@ -168,13 +188,27 @@ export default function ManageComplaints() {
               <Table>
                 <TableHead>
                   <TableRow>
-                    <TableCell><b>Created</b></TableCell>
-                    <TableCell><b>Roll No.</b></TableCell>
-                    <TableCell><b>Phone</b></TableCell>
-                    <TableCell><b>Room</b></TableCell>
-                    <TableCell><b>Type</b></TableCell>
-                    <TableCell><b>Description</b></TableCell>
-                    <TableCell><b>Status</b></TableCell>
+                    <TableCell>
+                      <b>Created</b>
+                    </TableCell>
+                    <TableCell>
+                      <b>StudentID</b>
+                    </TableCell>
+                    <TableCell>
+                      <b>Phone</b>
+                    </TableCell>
+                    <TableCell>
+                      <b>Room</b>
+                    </TableCell>
+                    <TableCell>
+                      <b>Type</b>
+                    </TableCell>
+                    <TableCell>
+                      <b>Description</b>
+                    </TableCell>
+                    <TableCell>
+                      <b>Status</b>
+                    </TableCell>
                   </TableRow>
                 </TableHead>
 
@@ -182,13 +216,13 @@ export default function ManageComplaints() {
                   {complaints.map((c) => (
                     <TableRow key={c._id} hover>
                       <TableCell>{c.createdAt}</TableCell>
-                      <TableCell>{c.rollNum}</TableCell>
-                      <TableCell>{c.phone}</TableCell>
-                      <TableCell>{c.room}</TableCell>
+                      <TableCell>{c.studentID}</TableCell>
+                      <TableCell>{c.phoneNum}</TableCell>
+                      <TableCell>{c.roomNum}</TableCell>
                       <TableCell>{c.type}</TableCell>
 
                       <TableCell sx={{ maxWidth: 250 }}>
-                        <ExpandableText text={c.description} />
+                        <ExpandableText text={c.desc} />
                       </TableCell>
 
                       <TableCell>
@@ -202,9 +236,7 @@ export default function ManageComplaints() {
                             <Button
                               size="small"
                               variant="outlined"
-                              onClick={() =>
-                                updateStatus(c._id, "RESOLVED")
-                              }
+                              onClick={handleResolve}
                             >
                               Resolve
                             </Button>

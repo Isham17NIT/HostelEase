@@ -22,7 +22,7 @@ import Complaints from "../student/pages/Complaints";
 import Profile from "../student/pages/Profile";
 
 export default function App() {
-  const { user } = useContext(UserContext);
+  const { user, loading } = useContext(UserContext);
 
   return (
     <Routes>
@@ -66,7 +66,7 @@ export default function App() {
       <Route
         path="/"
         element={
-          user ? (
+          loading ? null : user ? (
             user.role === "ADMIN" ? (
               <Navigate to="/admin" />
             ) : (
