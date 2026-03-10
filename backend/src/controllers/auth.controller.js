@@ -107,7 +107,7 @@ export const refreshAccessToken = asyncHandler(async (req, res) => {
 
 // Get current user controller
 export const getCurrentUser = asyncHandler(async (req, res) => {
-  const user = await User.findById(req.user.id).select(
+  const user = await User.findOne({email: req.user.email}).select(
     "-password -refreshToken"
   );
   if (!user) {

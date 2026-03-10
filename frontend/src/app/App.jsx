@@ -33,7 +33,7 @@ export default function App() {
       <Route
         path="/admin/*"
         element={
-          <ProtectedRoute user={user} role="ADMIN">
+          <ProtectedRoute user={user} loading={loading} role="ADMIN">
             <AdminLayout />
           </ProtectedRoute>
         }
@@ -50,7 +50,7 @@ export default function App() {
       <Route
         path="/student/*"
         element={
-          <ProtectedRoute user={user} role="STUDENT">
+          <ProtectedRoute user={user} loading={loading} role="STUDENT">
             <StudentLayout />
           </ProtectedRoute>
         }
