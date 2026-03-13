@@ -62,9 +62,8 @@ export default function ManageComplaints() {
   const [complaints, setComplaints] = useState([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [updatingId, setUpdatingId] = useState("");
 
-  const getInitialComplaints = async () => {
+  const getPendingComplaints = async () => {
     setError("");
     setLoading(true);
     // backend api call
@@ -72,8 +71,7 @@ export default function ManageComplaints() {
       const response = await api.get("/admin/complaints/pending", {
         withCredentials: true,
       });
-      const pendingComplaints = response?.data?.data;
-      setComplaints(Array.isArray(pendingComplaints) ? pendingComplaints : []);
+      setComplaints(response.data?.data?.pendingComplaints || []);
     } catch (error) {
       setError(
         error.response?.data?.message ||
@@ -86,32 +84,27 @@ export default function ManageComplaints() {
   };
 
   useEffect(() => {
-    getInitialComplaints();
+    getPendingComplaints();
   }, []);
 
-  const handleResolve = async (complaintId) => {
+  const handleResolve = async (id) => {
     setError("");
-    setUpdatingId(complaintId);
+    setLoading(true)
 
     try {
-      const response = await api.post(
-        "/admin/complaints/update-status",
-        { complaintId, newStatus: "RESOLVED" },
+      const response = await api.patch(
+        `/admin/complaints/{id}`,
+        { newStatus: "RESOLVED" },
         { withCredentials: true },
       );
-      const updatedComplaint = response.data.data;
-      setComplaints((prev) => 
-        updatedComplaint.status === "RESOLVED"
-          ? prev.filter((c) => c._id !== complaintId)
-          : prev
-      );
+      await getPendingComplaints()
     } catch (error) {
       setError(
-        error?.response?.data?.message ||
+        error.response?.data?.message ||
           "Error while updating complaint status",
       );
     } finally {
-      setUpdatingId("");
+      setLoading(false)
     }
   };
 
@@ -127,7 +120,6 @@ export default function ManageComplaints() {
         </Alert>
       )}
 
-      {/* MOBILE VIEW */}
       {loading ? 
       (
         <Box py={6} display="flex" justifyContent="center">

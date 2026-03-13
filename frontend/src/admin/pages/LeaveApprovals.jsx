@@ -14,45 +14,57 @@ import {
   Button,
   Stack,
   useMediaQuery,
+  Alert,
+  CircularProgress
 } from "@mui/material";
-import { useState } from "react";
-
-const initialLeaves = [
-  {
-    id: 1,
-    appliedOn: "2025-01-10",
-    rollNo: "CS23B001",
-    fromDate: "2025-01-10",
-    toDate: "2025-01-15",
-    days: 5,
-    address: "Delhi, India",
-    purpose: "Family function",
-    status: "PENDING",
-  },
-  {
-    id: 2,
-    appliedOn: "2025-01-12",
-    rollNo: "CS23B045",
-    fromDate: "2025-01-10",
-    toDate: "2025-01-20",
-    days: 10,
-    address: "Jaipur, Rajasthan",
-    purpose: "Medical treatment",
-    status: "PENDING",
-  },
-];
+import { useState, useEffect } from "react";
+import api from "../../api/axiosInstance";
 
 export default function LeaveApprovals() {
-  const isMobile = useMediaQuery("(max-width:768px)");
-  const [leaves, setLeaves] = useState(initialLeaves);
+  const [leaves, setLeaves] = useState([]);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [updatingId, setUpdatingId] = useState("");
 
-  const updateStatus = (id, newStatus) => {
-    setLeaves((prev) =>
-      prev.map((leave) =>
-        leave.id === id ? { ...leave, status: newStatus } : leave
-      )
-    );
+  const getPendingLeaves = async () => {
+    setLoading(true);
+    setError("");
+    try {
+      const res = await api.get("/admin/leaves/pending", { withCredentials: true });
+      setLeaves(res.data?.data?.pendingLeaves || []);
+    } catch (error) {
+      setLeaves([]);
+      setError(error.response?.data?.message || "Error while fetching leaves");
+    } finally {
+      setLoading(false);
+    }
   };
+  const isMobile = useMediaQuery("(max-width:768px)");
+
+  const updateStatus = async (id, newStatus) => {
+    setError("");
+    setLoading(true);
+    try {
+      const res = await api.patch(
+        `/admin/leaves/${id}`,
+        { newStatus },
+        { withCredentials: true },
+      );
+      await getPendingLeaves();
+    } catch (err) {
+      setLeaves([]);
+      setError(
+        error.response?.data?.message || "Error while updating leave status",
+      );
+    } finally {
+      setLoading(false);
+    }
+    const res = await api.patch(`admin/leaves/${id}`);
+  };
+
+  useEffect(() => {
+    getPendingLeaves();
+  }, []);
 
   const getStatusChip = (status) => {
     if (status === "APPROVED") return "success";
@@ -66,11 +78,22 @@ export default function LeaveApprovals() {
         Leaves
       </Typography>
 
-      {/* MOBILE VIEW */}
-      {isMobile ? (
+      {error && (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {error}
+        </Alert>
+      )}
+
+      {loading ? (
+        <Box py={6} display="flex" justifyContent="center">
+          <CircularProgress />
+        </Box>
+      ) : leaves.length === 0 ? (
+        <Alert severity="info">No pending leaves found</Alert>
+      ) : isMobile ? (
         <Stack spacing={2}>
           {leaves.map((row) => (
-            <Card key={row.id}>
+            <Card key={row._id}>
               <CardContent>
                 <Typography fontWeight="bold">{row.rollNo}</Typography>
 
@@ -103,7 +126,7 @@ export default function LeaveApprovals() {
                         size="small"
                         variant="contained"
                         color="success"
-                        onClick={() => updateStatus(row.id, "APPROVED")}
+                        onClick={() => updateStatus(row._id, "APPROVED")}
                       >
                         Approve
                       </Button>
@@ -111,7 +134,7 @@ export default function LeaveApprovals() {
                         size="small"
                         variant="outlined"
                         color="error"
-                        onClick={() => updateStatus(row.id, "REJECTED")}
+                        onClick={() => updateStatus(row._id, "REJECTED")}
                       >
                         Reject
                       </Button>
@@ -130,20 +153,36 @@ export default function LeaveApprovals() {
               <Table>
                 <TableHead>
                   <TableRow>
-                    <TableCell><b>Applied On</b></TableCell>
-                    <TableCell><b>Roll No.</b></TableCell>
-                    <TableCell><b>From Date</b></TableCell>
-                    <TableCell><b>To Date</b></TableCell>
-                    <TableCell><b>Leave Address</b></TableCell>
-                    <TableCell><b>Purpose</b></TableCell>
-                    <TableCell><b>Status</b></TableCell>
-                    <TableCell align="right"><b>Action</b></TableCell>
+                    <TableCell>
+                      <b>Applied On</b>
+                    </TableCell>
+                    <TableCell>
+                      <b>Roll No.</b>
+                    </TableCell>
+                    <TableCell>
+                      <b>From Date</b>
+                    </TableCell>
+                    <TableCell>
+                      <b>To Date</b>
+                    </TableCell>
+                    <TableCell>
+                      <b>Leave Address</b>
+                    </TableCell>
+                    <TableCell>
+                      <b>Purpose</b>
+                    </TableCell>
+                    <TableCell>
+                      <b>Status</b>
+                    </TableCell>
+                    <TableCell align="right">
+                      <b>Action</b>
+                    </TableCell>
                   </TableRow>
                 </TableHead>
 
                 <TableBody>
                   {leaves.map((row) => (
-                    <TableRow key={row.id} hover>
+                    <TableRow key={row._id} hover>
                       <TableCell>{row.appliedOn}</TableCell>
                       <TableCell>{row.rollNo}</TableCell>
                       <TableCell>{row.fromDate}</TableCell>
@@ -170,9 +209,7 @@ export default function LeaveApprovals() {
                               size="small"
                               variant="contained"
                               color="success"
-                              onClick={() =>
-                                updateStatus(row.id, "APPROVED")
-                              }
+                              onClick={() => updateStatus(row._id, "APPROVED")}
                             >
                               APPROVE
                             </Button>
@@ -180,9 +217,7 @@ export default function LeaveApprovals() {
                               size="small"
                               variant="outlined"
                               color="error"
-                              onClick={() =>
-                                updateStatus(row.id, "REJECTED")
-                              }
+                              onClick={() => updateStatus(row._id, "REJECTED")}
                             >
                               REJECT
                             </Button>

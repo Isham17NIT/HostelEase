@@ -55,9 +55,10 @@ export const getPendingRebates = asyncHandler(async (req, res) => {
 });
 
 export const updateLeaveStatus = asyncHandler(async (req, res) => {
-  const { leaveId, newStatus } = req.body;
+  const { id } = req.params;
+  const { newStatus } = req.body;
   const updatedLeave = await Leave.findByIdAndUpdate(
-    leaveId,
+    id,
     { status: newStatus },
     { new: true, runValidators: true }
   );
@@ -85,9 +86,10 @@ export const updateLeaveStatus = asyncHandler(async (req, res) => {
 });
 
 export const updateRebateStatus = asyncHandler(async (req, res) => {
-  const { rebateId, newStatus } = req.body;
+  const { id } = req.params;
+  const { newStatus } = req.body;
   const updatedRebate = await Rebate.findByIdAndUpdate(
-    rebateId,
+    id,
     { status: newStatus },
     { new: true }
   );
@@ -106,9 +108,10 @@ export const updateRebateStatus = asyncHandler(async (req, res) => {
 });
 
 export const updateComplaintStatus = asyncHandler(async (req, res) => {
-  const { complaintId, newStatus } = req.body;
+  const { newStatus } = req.body;
+  const { id } = req.params;
   const updatedComplaint = await Complaint.findByIdAndUpdate(
-    complaintId,
+    id,
     { status: newStatus },
     { new: true }
   );
@@ -190,6 +193,11 @@ export const registerStudent = asyncHandler(async (req, res) => {
     throw new ApiError(400, "All fields are required!");
   }
 
+  // Check if user with same email exists
+  const existingUser = await User.findOne({email})
+  if(existingUser)
+    throw new ApiError(409, "User with this email already exists.");
+    
   // Check if student with same rollNum exists
   const existingStudent = await Student.findOne({ rollNum });
   if (existingStudent) {

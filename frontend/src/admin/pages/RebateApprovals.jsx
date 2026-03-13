@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Box,
   Card,
@@ -15,45 +15,65 @@ import {
   Button,
   Stack,
   useMediaQuery,
+  Alert,
+  CircularProgress
 } from "@mui/material";
+import api from "../../api/axiosInstance";
 
 const STATUS_COLORS = {
   PENDING: "warning",
   APPROVED: "success",
+  REJECTED: "error",
 };
-
-const initialRebates = [
-  {
-    _id: "RBT001",
-    createdAt: "2025-01-10",
-    rollNum: "CS23B001",
-    fromDate: "2025-01-10",
-    dateOfJoining: "2025-01-15",
-    numDays: 5,
-    status: "PENDING",
-  },
-  {
-    _id: "RBT002",
-    createdAt: "2025-01-12",
-    rollNum: "CS23B045",
-    fromDate: "2025-01-10",
-    dateOfJoining: "2025-01-20",
-    numDays: 10,
-    status: "PENDING",
-  },
-];
 
 export default function ManageRebates() {
   const isMobile = useMediaQuery("(max-width:768px)");
-  const [rebates, setRebates] = useState(initialRebates);
+  const [rebates, setRebates] = useState([]);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const updateStatus = (id, newStatus) => {
-    setRebates((prev) =>
-      prev.map((r) =>
-        r._id === id ? { ...r, status: newStatus } : r
-      )
-    );
+  const getPendingRebates = async () => {
+    setLoading(true);
+    setError("");
+    try {
+      const res = await api.get("/admin/rebates/pending", {
+        withCredentials: true,
+      });
+      setRebates(res.data?.data?.pendingRebates || []);
+    } catch (error) {
+      setRebates([]); // Ensures rebates is always an array
+      setError(
+        error.response?.data?.message ||
+          "Error while fetching pending complaints",
+      );
+    } finally {
+      setLoading(false);
+    }
   };
+
+  const updateStatus = async (id, newStatus) => {
+    setError("");
+    setLoading(true);
+    try {
+      const res = await api.patch(
+        `/admin/rebates/${id}`,
+        { newStatus },
+        { withCredentials: true },
+      );
+
+      await getPendingRebates();
+    } catch (error) {
+      setError(
+        error.response?.data?.message || "error while updating rebate status",
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    getPendingRebates();
+  }, []);
 
   return (
     <Box p={2}>
@@ -61,18 +81,27 @@ export default function ManageRebates() {
         Rebates
       </Typography>
 
-      {/* MOBILE VIEW */}
-      {isMobile ? (
+      {error && (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {error}
+        </Alert>
+      )}
+
+      {loading ? (
+        <Box py={6} display="flex" justifyContent="center">
+          <CircularProgress />
+        </Box>
+      ) : rebates.length === 0 ? (
+        <Alert severity="info">No pending rebates found</Alert>
+      ) : isMobile ? (
         <Stack spacing={2}>
           {rebates.map((r) => (
             <Card key={r._id}>
               <CardContent>
-                <Typography fontWeight="bold">
-                  {r._id}
-                </Typography>
+                <Typography fontWeight="bold">{r._id}</Typography>
 
                 <Typography variant="body2" color="text.secondary">
-                  Roll No: {r.rollNum}
+                  StudentID: {r.studentID}
                 </Typography>
 
                 <Typography mt={1}>
@@ -80,7 +109,7 @@ export default function ManageRebates() {
                 </Typography>
 
                 <Typography mt={1}>
-                  Date of Joining <b>{r.dateOfJoining}</b>
+                  To <b>{r.toDate}</b>
                 </Typography>
 
                 <Typography variant="body2" mt={1}>
@@ -96,38 +125,30 @@ export default function ManageRebates() {
                   Applied on {r.createdAt}
                 </Typography>
 
-                <Stack
-                  direction="row"
-                  spacing={1}
-                  mt={2}
-                  alignItems="center"
-                >
+                <Stack direction="row" spacing={1} mt={2} alignItems="center">
                   <Chip
                     label={r.status}
                     color={STATUS_COLORS[r.status]}
                     size="small"
                   />
+                  {r.status === "PENDING" && (
+                    <>
+                      <Button
+                        size="small"
+                        variant="outlined"
+                        onClick={() => updateStatus(r._id, "APPROVED")}
+                      >
+                        Approve
+                      </Button>
 
-                  {r.status !== "APPROVED" ? (
-                    <Button
-                      size="small"
-                      variant="outlined"
-                      onClick={() =>
-                        updateStatus(r._id, "APPROVED")
-                      }
-                    >
-                      Approve
-                    </Button>
-                  ) : (
-                    <Button
-                      size="small"
-                      color="warning"
-                      onClick={() =>
-                        updateStatus(r._id, "PENDING")
-                      }
-                    >
-                      Revoke
-                    </Button>
+                      <Button
+                        size="small"
+                        variant="outlined"
+                        onClick={() => updateStatus(r._id, "REJECTED")}
+                      >
+                        Reject
+                      </Button>
+                    </>
                   )}
                 </Stack>
               </CardContent>
@@ -142,12 +163,24 @@ export default function ManageRebates() {
               <Table>
                 <TableHead>
                   <TableRow>
-                    <TableCell><b>Applied On</b></TableCell>
-                    <TableCell><b>Roll No.</b></TableCell>
-                    <TableCell><b>From Date</b></TableCell>
-                    <TableCell><b>Joining Date</b></TableCell>
-                    <TableCell><b>No. of Days</b></TableCell>
-                    <TableCell><b>Status</b></TableCell>
+                    <TableCell>
+                      <b>Applied On</b>
+                    </TableCell>
+                    <TableCell>
+                      <b>StudentID</b>
+                    </TableCell>
+                    <TableCell>
+                      <b>From</b>
+                    </TableCell>
+                    <TableCell>
+                      <b>To</b>
+                    </TableCell>
+                    <TableCell>
+                      <b>No. of Days</b>
+                    </TableCell>
+                    <TableCell>
+                      <b>Status</b>
+                    </TableCell>
                   </TableRow>
                 </TableHead>
 
@@ -155,9 +188,9 @@ export default function ManageRebates() {
                   {rebates.map((r) => (
                     <TableRow key={r._id} hover>
                       <TableCell>{r.createdAt}</TableCell>
-                      <TableCell>{r.rollNum}</TableCell>
+                      <TableCell>{r.studentID}</TableCell>
                       <TableCell>{r.fromDate}</TableCell>
-                      <TableCell>{r.dateOfJoining}</TableCell>
+                      <TableCell>{r.toDate}</TableCell>
                       <TableCell>{r.numDays}</TableCell>
                       <TableCell>
                         <Stack direction="row" spacing={1}>
@@ -166,15 +199,24 @@ export default function ManageRebates() {
                             color={STATUS_COLORS[r.status]}
                             size="small"
                           />
-                          {r.status !== "APPROVED" && (
-                            <Button
-                              size="small"
-                              onClick={() =>
-                                updateStatus(r._id, "APPROVED")
-                              }
-                            >
-                              Approve
-                            </Button>
+                          {r.status === "PENDING" && (
+                            <>
+                              <Button
+                                size="small"
+                                variant="outlined"
+                                onClick={() => updateStatus(r._id, "APPROVED")}
+                              >
+                                Approve
+                              </Button>
+
+                              <Button
+                                size="small"
+                                variant="outlined"
+                                onClick={() => updateStatus(r._id, "REJECTED")}
+                              >
+                                Reject
+                              </Button>
+                            </>
                           )}
                         </Stack>
                       </TableCell>

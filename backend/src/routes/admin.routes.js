@@ -25,15 +25,15 @@ router.use(roleMiddleware("ADMIN"));
 
 // Complaints
 router.route("/complaints/pending").get(getPendingComplaints);
-router.route("/complaints/update-status").post(updateComplaintStatus);
+router.route("/complaints/:id").patch(updateComplaintStatus);
 
 // Leaves
 router.route("/leaves/pending").get(getPendingLeaves);
-router.route("/leaves/update-status").post(updateLeaveStatus);
+router.route("/leaves/:id").patch(updateLeaveStatus);
 
 // Rebates
 router.route("/rebates/pending").get(getPendingRebates);
-router.route("/rebates/update-status").post(updateRebateStatus);
+router.route("/rebates/:id").patch(updateRebateStatus);
 
 // Rooms
 router.route("/rooms/check-availability").post(checkRoomAvailability);
