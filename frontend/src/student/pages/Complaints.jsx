@@ -10,7 +10,7 @@ import {
   FormControl,
   InputLabel,
   Select,
-  MenuItem, 
+  MenuItem,
   Paper,
   Table,
   TableBody,
@@ -18,34 +18,80 @@ import {
   TableContainer,
   TableHead,
   TablePagination,
-  TableRow
+  TableRow,
+  Alert,
 } from "@mui/material";
+import api from "../../api/axiosInstance";
 
 export default function Complaints() {
-  const [type, setType] = useState("");
-  const [desc, setDesc] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [msg, setMsg] = useState("");
 
-  const charCount = desc.length;
+  const [formData, setFormData] = useState({
+    type: "",
+    desc: "",
+  });
+
+  const handleChange = (e) => {
+    setError("");
+    setMsg("");
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const submitComplaint = async () => {
+    setLoading(true);
+    setError("");
+    setMsg("");
+
+    try {
+      const res = await api.post("/student/registerComplaint", formData, {
+        withCredentials: true,
+      });
+      if (res.data?.success) {
+        setMsg("Complaint submitted successfully");
+        setFormData({
+          type: "",
+          desc: ""
+        });
+      }
+    } catch (error) {
+      setError(error.response?.data?.message || "Error while submitting complaint");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <Box sx={{ maxWidth: 900 }}>
-      {/* ================= REGISTER COMPLAINT ================= */}
       <Typography variant="h5" gutterBottom>
         Register a Complaint
       </Typography>
 
+      {error && (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {error}
+        </Alert>
+      )}
+
+      {msg && (
+        <Box mb={2}>
+          <Typography color="success.main" fontWeight="bold">
+            {msg}
+          </Typography>
+        </Box>
+      )}
+
       <Stack spacing={2} sx={{ mb: 4 }}>
-        {/* Complaint Type */}
         <FormControl fullWidth>
-          <InputLabel id="complaint-type-label">
-            Complaint Type
-          </InputLabel>
+          <InputLabel id="complaint-type-label">Complaint Type</InputLabel>
           <Select
             labelId="complaint-type-label"
             label="Complaint Type"
-            value={type}
-            onChange={(e) => setType(e.target.value)}
+            onChange={handleChange}
             required
+            name="type"
+            value={formData.type}
           >
             <MenuItem value="ELECTRICITY">Electricity</MenuItem>
             <MenuItem value="WATER">Water</MenuItem>
@@ -55,25 +101,26 @@ export default function Complaints() {
           </Select>
         </FormControl>
 
-        {/* Complaint Description */}
         <TextField
           label="Complaint Description"
           fullWidth
           multiline
           rows={4}
-          value={desc}
-          onChange={(e) => setDesc(e.target.value)}
+          name="desc"
+          value={formData.desc}
+          onChange={handleChange}
           InputProps={{ maxLength: 200 }}
-          error={charCount > 200}
-          helperText={`${charCount}/200 characters`}
+          error={formData.desc.length > 200}
+          helperText={`${formData.desc.length}/200 characters`}
           placeholder="Describe the issue briefly (max 200 characters)"
           required
         />
 
-        {/* Submit */}
         <Button
           variant="contained"
           sx={{ alignSelf: "flex-start" }}
+          onClick={submitComplaint}
+          disabled={loading || Object.values(formData).some((val) => !val)}
         >
           Register Complaint
         </Button>
@@ -129,9 +176,8 @@ export default function Complaints() {
                 : "default"
             }
           /> */}
-        {/* </Box> */}
+      {/* </Box> */}
       {/* ))} */}
-
     </Box>
   );
 }

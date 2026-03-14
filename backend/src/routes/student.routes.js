@@ -12,6 +12,7 @@ import {
   getLeaves,
   getRebates,
   getComplaints,
+  getProfile
 } from "../controllers/student.controller.js";
 
 const router = express.Router();
@@ -29,5 +30,6 @@ router.route("/changePassword").post(changePassword);
 router.route("/leaves").get(getLeaves);
 router.route("/rebates").get(getRebates);
 router.route("/complaints").get(getComplaints);
+router.route("/getProfile").get(getProfile);
 
 export default router;

@@ -53,7 +53,7 @@ export default function AdminSidebar({ mobileOpen, onClose }) {
       {/* HEADER */}
       <Box sx={{ p: 2, display:"flex", flexDirection: "column", alignItems:"center", justifyContent:"space-evenly"}}>
         <Typography variant="h6" fontWeight="bold">
-          HostelHub
+          HostelEase
         </Typography>
         <Typography variant="caption">Admin Portal</Typography>
       </Box>

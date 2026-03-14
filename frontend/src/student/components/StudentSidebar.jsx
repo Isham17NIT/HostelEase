@@ -49,7 +49,7 @@ export default function StudentSidebar({ mobileOpen, onClose }) {
       {/* HEADER */}
       <Box sx={{ p: 2, display:"flex", flexDirection: "column", alignItems:"center", justifyContent:"space-evenly"}}>
         <Typography variant="h6" fontWeight="bold">
-          HostelHub
+          HostelEase
         </Typography>
         <Typography variant="caption">Student Portal</Typography>
       </Box>

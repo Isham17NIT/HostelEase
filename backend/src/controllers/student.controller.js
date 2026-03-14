@@ -39,13 +39,17 @@ export const applyForLeave = asyncHandler(async (req, res) => {
 });
 
 export const applyForRebate = asyncHandler(async (req, res) => {
-  const { fromDate, toDate, numDays } = req.body;
+  const { fromDate, toDate } = req.body;
   const studentID = req.user.studentID;
 
-  if (!fromDate || !toDate || !numDays)
+  if (!fromDate || !toDate)
     throw new ApiError(400, "All fields are required");
 
   if (!studentID) throw new ApiError(400, "Invalid request");
+
+  const from = new Date(fromDate)
+  const to = new Date(toDate)
+  const numDays = Math.ceil((to - from) / (1000 * 60 * 60 * 24)) + 1;
 
   const rebate = await Rebate.create({
     studentID,
@@ -94,14 +98,11 @@ export const registerComplaint = asyncHandler(async (req, res) => {
 });
 
 export const changePassword = asyncHandler(async (req, res) => {
-  const { newPassword, confirmNewPassword } = req.body;
+  const { newPassword } = req.body;
   const email = req.user.email;
 
-  if (!newPassword || !confirmNewPassword)
-    throw new ApiError(400, "All fields are required!");
-
-  if (newPassword !== confirmNewPassword)
-    throw new ApiError(400, "Confirmed password not same as new password");
+  if (!newPassword)
+    throw new ApiError(400, "Please provide password first!");
 
   const user = await User.findOne({ email });
   user.password = newPassword;
@@ -185,3 +186,15 @@ export const getComplaints = asyncHandler(async (req, res) => {
     .status(200)
     .json(new ApiResponse(200, complaints, "Fetched complaints successfully"));
 });
+
+export const getProfile = asyncHandler(async(req, res) => {
+  const studentID = req.user.studentID;
+  if(!studentID){
+    throw new ApiError(400, "Invalid Request!")
+  }
+  const studentInfo = await Student.findById(studentID);
+  if(!studentInfo){
+    throw new ApiError(404, "Student not found!")
+  }
+  return res.status(200).json(new ApiResponse(200, studentInfo, "Fetched student info successfully"))
+})

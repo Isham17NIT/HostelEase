@@ -120,7 +120,7 @@ export default function RegisterStudent() {
         variant="contained"
         sx={{ mt: 2 }}
         onClick={registerStudent}
-        disabled={Object.values(formData).some((val) => !val) && loading}
+        disabled={Object.values(formData).some((val) => !val) || loading}
       >
         ADD STUDENT
       </Button>
