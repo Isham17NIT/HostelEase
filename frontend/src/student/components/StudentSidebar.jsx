@@ -18,16 +18,18 @@ import PersonIcon from '@mui/icons-material/Person';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 
 import { NavLink, useLocation } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useContext } from "react";
 
 import { logout } from "../../utils/logout.jsx";
 import { useThemeMode } from "../../app/ThemeContext";
+import { UserContext } from "../../app/UserContext.jsx";
 
 const drawerWidth = 200;
 
 export default function StudentSidebar({ mobileOpen, onClose }) {
   const { mode, toggleTheme } = useThemeMode();
   const location = useLocation();
+  const {setUser}=useContext(UserContext)
 
   // Auto-close drawer on route change or theme change(mobile only)
   useEffect(() => {
@@ -95,7 +97,7 @@ export default function StudentSidebar({ mobileOpen, onClose }) {
 
       {/* LOGOUT */}
       <List>
-        <ListItemButton onClick={logout} component={NavLink} to="/login">
+        <ListItemButton onClick={()=>logout(setUser)} component={NavLink} to="/login">
           <ListItemIcon sx={{ minWidth: 50, color: "text.primary" }}>
             <LogoutIcon/>
           </ListItemIcon>

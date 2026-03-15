@@ -108,7 +108,7 @@ export const changePassword = asyncHandler(async (req, res) => {
   user.password = newPassword;
   await user.save();
 
-  clearAuth(res, user);
+  await clearAuth(res, user);
 
   return res
     .status(200)

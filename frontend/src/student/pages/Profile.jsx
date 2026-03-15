@@ -15,6 +15,12 @@ import {
   CircularProgress,
 } from "@mui/material";
 import { useState, useEffect, useContext } from "react";
+
+// Helper to delay execution
+function delay(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 import api from "../../api/axiosInstance";
 import { logout } from "../../utils/logout";
 import { UserContext } from "../../app/UserContext";
@@ -96,14 +102,8 @@ export default function Profile() {
           confirmPassword: "",
         });
         handleClose();
-        const logoutRes = await api.post("/auth/logout", {
-          withCredentials: true,
-        });
-        if (logoutRes.data?.success) {
-          setTimeout(() => {
-            logout(setUser);
-          }, 1500);
-        }
+        await delay(1500);
+        await logout(setUser);
       }
     } catch (error) {
       setError(
