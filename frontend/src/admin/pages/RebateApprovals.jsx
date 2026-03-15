@@ -16,7 +16,7 @@ import {
   Stack,
   useMediaQuery,
   Alert,
-  CircularProgress
+  CircularProgress,
 } from "@mui/material";
 import api from "../../api/axiosInstance";
 
@@ -32,6 +32,11 @@ export default function ManageRebates() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const formatDate = (dateString) => {
+    if (!dateString) return "N/A";
+    return dateString.split("T")[0];
+  };
+
   const getPendingRebates = async () => {
     setLoading(true);
     setError("");
@@ -39,7 +44,7 @@ export default function ManageRebates() {
       const res = await api.get("/admin/rebates/pending", {
         withCredentials: true,
       });
-      setRebates(res.data?.data?.pendingRebates || []);
+      setRebates(res.data?.data || []);
     } catch (error) {
       setRebates([]); // Ensures rebates is always an array
       setError(
@@ -105,11 +110,11 @@ export default function ManageRebates() {
                 </Typography>
 
                 <Typography mt={1}>
-                  From <b>{r.fromDate}</b>
+                  From <b>{formatDate(r.fromDate)}</b>
                 </Typography>
 
                 <Typography mt={1}>
-                  To <b>{r.toDate}</b>
+                  To <b>{formatDate(r.toDate)}</b>
                 </Typography>
 
                 <Typography variant="body2" mt={1}>
@@ -122,7 +127,7 @@ export default function ManageRebates() {
                   display="block"
                   mt={1}
                 >
-                  Applied on {r.createdAt}
+                  Applied on {formatDate(r.createdAt)}
                 </Typography>
 
                 <Stack direction="row" spacing={1} mt={2} alignItems="center">
@@ -176,7 +181,7 @@ export default function ManageRebates() {
                       <b>To</b>
                     </TableCell>
                     <TableCell>
-                      <b>No. of Days</b>
+                      <b>Total Days</b>
                     </TableCell>
                     <TableCell>
                       <b>Status</b>
@@ -187,10 +192,10 @@ export default function ManageRebates() {
                 <TableBody>
                   {rebates.map((r) => (
                     <TableRow key={r._id} hover>
-                      <TableCell>{r.createdAt}</TableCell>
+                      <TableCell>{formatDate(r.createdAt)}</TableCell>
                       <TableCell>{r.studentID}</TableCell>
-                      <TableCell>{r.fromDate}</TableCell>
-                      <TableCell>{r.toDate}</TableCell>
+                      <TableCell>{formatDate(r.fromDate)}</TableCell>
+                      <TableCell>{formatDate(r.toDate)}</TableCell>
                       <TableCell>{r.numDays}</TableCell>
                       <TableCell>
                         <Stack direction="row" spacing={1}>

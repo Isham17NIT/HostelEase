@@ -1,5 +1,6 @@
 // admin specific opn
 
+import mongoose from "mongoose";
 import { Complaint } from "../models/complaint.model.js";
 import { Student } from "../models/student.model.js";
 import { Leave } from "../models/leave.model.js";
@@ -57,6 +58,7 @@ export const getPendingRebates = asyncHandler(async (req, res) => {
 export const updateLeaveStatus = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const { newStatus } = req.body;
+  
   const updatedLeave = await Leave.findByIdAndUpdate(
     id,
     { status: newStatus },
@@ -88,6 +90,7 @@ export const updateLeaveStatus = asyncHandler(async (req, res) => {
 export const updateRebateStatus = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const { newStatus } = req.body;
+  
   const updatedRebate = await Rebate.findByIdAndUpdate(
     id,
     { status: newStatus },
@@ -110,6 +113,7 @@ export const updateRebateStatus = asyncHandler(async (req, res) => {
 export const updateComplaintStatus = asyncHandler(async (req, res) => {
   const { newStatus } = req.body;
   const { id } = req.params;
+  
   const updatedComplaint = await Complaint.findByIdAndUpdate(
     id,
     { status: newStatus },

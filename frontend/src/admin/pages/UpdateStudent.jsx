@@ -9,13 +9,14 @@ import {
   MenuItem,
 } from "@mui/material";
 import { useState } from "react";
+import api from "../../api/axiosInstance";
 
 const FIELD_CONFIG = {
-  roomNumber: {
+  roomNum: {
     label: "Room Number",
     type: "text",
   },
-  phoneNumber: {
+  phoneNum: {
     label: "Phone Number",
     type: "text",
   },

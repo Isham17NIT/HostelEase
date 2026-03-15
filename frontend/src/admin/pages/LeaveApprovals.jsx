@@ -31,7 +31,7 @@ export default function LeaveApprovals() {
     setError("");
     try {
       const res = await api.get("/admin/leaves/pending", { withCredentials: true });
-      setLeaves(res.data?.data?.pendingLeaves || []);
+      setLeaves(res.data?.data || []);
     } catch (error) {
       setLeaves([]);
       setError(error.response?.data?.message || "Error while fetching leaves");
@@ -72,6 +72,11 @@ export default function LeaveApprovals() {
     return "warning";
   };
 
+  const formatDate = (dateString) => {
+    if (!dateString) return "N/A";
+    return dateString.split('T')[0];
+  };
+
   return (
     <Box sx={{ maxWidth: "1200px", mx: "auto", p: { xs: 2, sm: 3 } }}>
       <Typography variant="h5" fontWeight="bold" mb={2}>
@@ -95,14 +100,14 @@ export default function LeaveApprovals() {
           {leaves.map((row) => (
             <Card key={row._id}>
               <CardContent>
-                <Typography fontWeight="bold">{row.rollNo}</Typography>
+                <Typography fontWeight="bold">{row.studentID}</Typography>
 
                 <Typography variant="body2" color="text.secondary">
-                  {row.fromDate} → {row.toDate}
+                  {formatDate(row.fromDate)} → {formatDate(row.toDate)}
                 </Typography>
 
                 <Typography variant="body2" mt={1}>
-                  Applied on: {row.appliedOn}
+                  Applied on: {formatDate(row.createdAt)}
                 </Typography>
 
                 <Typography variant="body2" mt={1}>
@@ -157,7 +162,7 @@ export default function LeaveApprovals() {
                       <b>Applied On</b>
                     </TableCell>
                     <TableCell>
-                      <b>Roll No.</b>
+                      <b>StudentID</b>
                     </TableCell>
                     <TableCell>
                       <b>From Date</b>
@@ -183,10 +188,10 @@ export default function LeaveApprovals() {
                 <TableBody>
                   {leaves.map((row) => (
                     <TableRow key={row._id} hover>
-                      <TableCell>{row.appliedOn}</TableCell>
-                      <TableCell>{row.rollNo}</TableCell>
-                      <TableCell>{row.fromDate}</TableCell>
-                      <TableCell>{row.toDate}</TableCell>
+                      <TableCell>{formatDate(row.createdAt)}</TableCell>
+                      <TableCell>{row.studentID}</TableCell>
+                      <TableCell>{formatDate(row.fromDate)}</TableCell>
+                      <TableCell>{formatDate(row.toDate)}</TableCell>
                       <TableCell>{row.address}</TableCell>
                       <TableCell>{row.purpose}</TableCell>
 

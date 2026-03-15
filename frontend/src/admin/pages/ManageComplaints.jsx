@@ -16,7 +16,7 @@ import {
   Stack,
   useMediaQuery,
   CircularProgress,
-  Alert
+  Alert,
 } from "@mui/material";
 import api from "../../api/axiosInstance.js";
 
@@ -63,15 +63,20 @@ export default function ManageComplaints() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const formatDate = (dateString) => {
+    if (!dateString) return "N/A";
+    return dateString.split("T")[0];
+  };
+
   const getPendingComplaints = async () => {
     setError("");
     setLoading(true);
-    // backend api call
+    
     try {
       const response = await api.get("/admin/complaints/pending", {
         withCredentials: true,
       });
-      setComplaints(response.data?.data?.pendingComplaints || []);
+      setComplaints(response.data?.data || []);
     } catch (error) {
       setError(
         error.response?.data?.message ||
@@ -87,24 +92,24 @@ export default function ManageComplaints() {
     getPendingComplaints();
   }, []);
 
-  const handleResolve = async (id) => {
+  const handleResolve = async(id) => {
     setError("");
-    setLoading(true)
+    setLoading(true);
 
     try {
       const response = await api.patch(
-        `/admin/complaints/{id}`,
+        `/admin/complaints/${id}`,
         { newStatus: "RESOLVED" },
         { withCredentials: true },
       );
-      await getPendingComplaints()
+      await getPendingComplaints();
     } catch (error) {
       setError(
         error.response?.data?.message ||
           "Error while updating complaint status",
       );
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   };
 
@@ -120,12 +125,11 @@ export default function ManageComplaints() {
         </Alert>
       )}
 
-      {loading ? 
-      (
+      {loading ? (
         <Box py={6} display="flex" justifyContent="center">
           <CircularProgress />
         </Box>
-      ) : complaints.length===0 ? (
+      ) : complaints.length === 0 ? (
         <Alert severity="info">No pending complaints found</Alert>
       ) : isMobile ? (
         <Stack spacing={2}>
@@ -148,7 +152,7 @@ export default function ManageComplaints() {
                   display="block"
                   mt={1}
                 >
-                  {c.createdAt} | {c.studentID} | {c.phoneNum}
+                  {formatDate(c.createdAt)} | {c.studentID} | {c.phoneNum}
                 </Typography>
 
                 <Stack direction="row" spacing={1} mt={2} alignItems="center">
@@ -162,7 +166,7 @@ export default function ManageComplaints() {
                     <Button
                       size="small"
                       variant="outlined"
-                      onClick={handleResolve}
+                      onClick={()=>handleResolve(c._id)}
                     >
                       Resolve
                     </Button>
@@ -207,7 +211,7 @@ export default function ManageComplaints() {
                 <TableBody>
                   {complaints.map((c) => (
                     <TableRow key={c._id} hover>
-                      <TableCell>{c.createdAt}</TableCell>
+                      <TableCell>{formatDate(c.createdAt)}</TableCell>
                       <TableCell>{c.studentID}</TableCell>
                       <TableCell>{c.phoneNum}</TableCell>
                       <TableCell>{c.roomNum}</TableCell>
@@ -228,7 +232,7 @@ export default function ManageComplaints() {
                             <Button
                               size="small"
                               variant="outlined"
-                              onClick={handleResolve}
+                              onClick={()=>handleResolve(c._id)}
                             >
                               Resolve
                             </Button>
