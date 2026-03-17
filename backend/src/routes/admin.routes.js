@@ -12,6 +12,8 @@ import {
   registerStudent,
   deleteStudent,
   updateStudentDetails,
+  getDashboardStats,
+  getRecentActivity
 } from "../controllers/admin.controller.js";
 
 import { authMiddleware } from "../middlewares/auth.middleware.js";
@@ -22,6 +24,10 @@ const router = express.Router();
 // protect all admin routes
 router.use(authMiddleware);
 router.use(roleMiddleware("ADMIN"));
+
+// Dashboard
+router.route("/dashboard/stats").get(getDashboardStats);
+router.route("/dashboard/activity").get(getRecentActivity)
 
 // Complaints
 router.route("/complaints/pending").get(getPendingComplaints);

@@ -12,7 +12,7 @@ import {
   getLeaves,
   getRebates,
   getComplaints,
-  getProfile
+  getProfile,
 } from "../controllers/student.controller.js";
 
 const router = express.Router();

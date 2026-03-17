@@ -1,6 +1,5 @@
 // admin specific opn
 
-import mongoose from "mongoose";
 import { Complaint } from "../models/complaint.model.js";
 import { Student } from "../models/student.model.js";
 import { Leave } from "../models/leave.model.js";
@@ -11,6 +10,8 @@ import { ApiError } from "../utils/ApiError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { User } from "../models/user.model.js";
 import nodemailer from "nodemailer";
+import { paginate } from "../utils/paginate.js";
+import { Activity } from "../models/activity.model.js";
 
 const transporter = nodemailer.createTransport({
   service: "gmail",
@@ -20,6 +21,42 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+export const getDashboardStats = asyncHandler(async (req, res) => {
+  const [
+    totalStudents,
+    pendingLeaves,
+    availableRooms,
+    pendingRebates,
+    openComplaints,
+  ] = await Promise.all([
+    Student.countDocuments(),
+    Leave.countDocuments({ staus: "PENDING" }),
+    Room.countDocuments({ status: "VACANT" }),
+    Rebate.countDocuments({ status: "PENDING" }),
+    Complaint.countDocuments({ status: "PENDING" }),
+  ]);
+  return res.status(200).json(new ApiResponse(200, {
+    totalStudents,
+    pendingLeaves,
+    availableRooms,
+    pendingRebates,
+    openComplaints,
+  }, "Dashboard stats fetched successfully"))
+});
+
+export const getRecentActivity = asyncHandler(async (req, res) => {
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
+  const activity = await paginate(Activity, {}, { createdAt: -1 }, page, limit);
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, activity, "Recent activities fetched successfully")
+    );
+});
+
+// TODO---> ADD pagination support here
 export const getPendingComplaints = asyncHandler(async (req, res) => {
   const pendingComplaints = await Complaint.find({ status: "PENDING" });
   return res
@@ -58,7 +95,7 @@ export const getPendingRebates = asyncHandler(async (req, res) => {
 export const updateLeaveStatus = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const { newStatus } = req.body;
-  
+
   const updatedLeave = await Leave.findByIdAndUpdate(
     id,
     { status: newStatus },
@@ -78,6 +115,11 @@ export const updateLeaveStatus = asyncHandler(async (req, res) => {
         subject: `Your ward ${student.name} has applied leave`,
         text: `From: ${updatedLeave.fromDate}, To: ${updatedLeave.toDate}, Address: ${updatedLeave.address}, Purpose: ${updatedLeave.purpose}`,
       };
+      try {
+        await transporter.sendMail(mailOptions);
+      } catch (error) {
+        console.log(error); // fix
+      }
     }
   }
   return res
@@ -90,7 +132,7 @@ export const updateLeaveStatus = asyncHandler(async (req, res) => {
 export const updateRebateStatus = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const { newStatus } = req.body;
-  
+
   const updatedRebate = await Rebate.findByIdAndUpdate(
     id,
     { status: newStatus },
@@ -113,7 +155,7 @@ export const updateRebateStatus = asyncHandler(async (req, res) => {
 export const updateComplaintStatus = asyncHandler(async (req, res) => {
   const { newStatus } = req.body;
   const { id } = req.params;
-  
+
   const updatedComplaint = await Complaint.findByIdAndUpdate(
     id,
     { status: newStatus },
@@ -198,10 +240,10 @@ export const registerStudent = asyncHandler(async (req, res) => {
   }
 
   // Check if user with same email exists
-  const existingUser = await User.findOne({email})
-  if(existingUser)
+  const existingUser = await User.findOne({ email });
+  if (existingUser)
     throw new ApiError(409, "User with this email already exists.");
-    
+
   // Check if student with same rollNum exists
   const existingStudent = await Student.findOne({ rollNum });
   if (existingStudent) {
@@ -255,7 +297,7 @@ export const registerStudent = asyncHandler(async (req, res) => {
   try {
     await transporter.sendMail(mailOptions);
   } catch (error) {
-    console.log(error);
+    console.log(error); // fix
   }
 
   return res
