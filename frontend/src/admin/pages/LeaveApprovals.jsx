@@ -24,7 +24,6 @@ export default function LeaveApprovals() {
   const [leaves, setLeaves] = useState([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [updatingId, setUpdatingId] = useState("");
 
   const getPendingLeaves = async () => {
     setLoading(true);
@@ -41,17 +40,17 @@ export default function LeaveApprovals() {
   };
   const isMobile = useMediaQuery("(max-width:768px)");
 
-  const updateStatus = async (id, newStatus) => {
+  const updateStatus = async (id, newStatus, studentID) => {
     setError("");
     setLoading(true);
     try {
       const res = await api.patch(
         `/admin/leaves/${id}`,
-        { newStatus },
+        { newStatus, studentID },
         { withCredentials: true },
       );
       await getPendingLeaves();
-    } catch (err) {
+    } catch (error) {
       setLeaves([]);
       setError(
         error.response?.data?.message || "Error while updating leave status",
@@ -131,7 +130,7 @@ export default function LeaveApprovals() {
                         size="small"
                         variant="contained"
                         color="success"
-                        onClick={() => updateStatus(row._id, "APPROVED")}
+                        onClick={() => updateStatus(row._id, "APPROVED", row.studentID)}
                       >
                         Approve
                       </Button>
@@ -139,7 +138,7 @@ export default function LeaveApprovals() {
                         size="small"
                         variant="outlined"
                         color="error"
-                        onClick={() => updateStatus(row._id, "REJECTED")}
+                        onClick={() => updateStatus(row._id, "REJECTED", row.studentID)}
                       >
                         Reject
                       </Button>
@@ -214,7 +213,7 @@ export default function LeaveApprovals() {
                               size="small"
                               variant="contained"
                               color="success"
-                              onClick={() => updateStatus(row._id, "APPROVED")}
+                              onClick={() => updateStatus(row._id, "APPROVED", row.studentID)}
                             >
                               APPROVE
                             </Button>
@@ -222,7 +221,7 @@ export default function LeaveApprovals() {
                               size="small"
                               variant="outlined"
                               color="error"
-                              onClick={() => updateStatus(row._id, "REJECTED")}
+                              onClick={() => updateStatus(row._id, "REJECTED", row.studentID)}
                             >
                               REJECT
                             </Button>

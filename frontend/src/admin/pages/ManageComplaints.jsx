@@ -92,14 +92,14 @@ export default function ManageComplaints() {
     getPendingComplaints();
   }, []);
 
-  const handleResolve = async(id) => {
+  const handleResolve = async(id, studentID) => {
     setError("");
     setLoading(true);
 
     try {
       const response = await api.patch(
         `/admin/complaints/${id}`,
-        { newStatus: "RESOLVED" },
+        { newStatus: "RESOLVED", studentID },
         { withCredentials: true },
       );
       await getPendingComplaints();
@@ -166,7 +166,7 @@ export default function ManageComplaints() {
                     <Button
                       size="small"
                       variant="outlined"
-                      onClick={()=>handleResolve(c._id)}
+                      onClick={()=>handleResolve(c._id, c.studentID)}
                     >
                       Resolve
                     </Button>
@@ -232,7 +232,7 @@ export default function ManageComplaints() {
                             <Button
                               size="small"
                               variant="outlined"
-                              onClick={()=>handleResolve(c._id)}
+                              onClick={()=>handleResolve(c._id, c.studentID)}
                             >
                               Resolve
                             </Button>

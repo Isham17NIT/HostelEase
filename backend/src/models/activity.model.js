@@ -16,8 +16,7 @@ const activitySchema = new mongoose.Schema({
         required: true
     },
     desc:{
-        type:String,
-        required: true
+        type:String
     },
     studentID: {
         type: mongoose.Schema.Types.ObjectId,

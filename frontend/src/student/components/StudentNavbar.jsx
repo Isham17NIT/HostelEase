@@ -30,7 +30,7 @@ export default function StudentNavbar({ onMenuClick }) {
         {/* TITLE */}
         <Box>
           <Typography variant="h6" fontWeight="bold" lineHeight={1.2}>
-            HostelHub
+            HostelEase
           </Typography>
           <Typography variant="caption">
             Student Portal

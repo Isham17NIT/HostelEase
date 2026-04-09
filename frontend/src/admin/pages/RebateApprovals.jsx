@@ -56,13 +56,13 @@ export default function ManageRebates() {
     }
   };
 
-  const updateStatus = async (id, newStatus) => {
+  const updateStatus = async (id, newStatus, studentID) => {
     setError("");
     setLoading(true);
     try {
       const res = await api.patch(
         `/admin/rebates/${id}`,
-        { newStatus },
+        { newStatus, studentID },
         { withCredentials: true },
       );
 
@@ -141,7 +141,7 @@ export default function ManageRebates() {
                       <Button
                         size="small"
                         variant="outlined"
-                        onClick={() => updateStatus(r._id, "APPROVED")}
+                        onClick={() => updateStatus(r._id, "APPROVED", r.studentID)}
                       >
                         Approve
                       </Button>
@@ -149,7 +149,7 @@ export default function ManageRebates() {
                       <Button
                         size="small"
                         variant="outlined"
-                        onClick={() => updateStatus(r._id, "REJECTED")}
+                        onClick={() => updateStatus(r._id, "REJECTED", r.studentID)}
                       >
                         Reject
                       </Button>
@@ -209,7 +209,7 @@ export default function ManageRebates() {
                               <Button
                                 size="small"
                                 variant="outlined"
-                                onClick={() => updateStatus(r._id, "APPROVED")}
+                                onClick={() => updateStatus(r._id, "APPROVED", r.studentID)}
                               >
                                 Approve
                               </Button>
@@ -217,7 +217,7 @@ export default function ManageRebates() {
                               <Button
                                 size="small"
                                 variant="outlined"
-                                onClick={() => updateStatus(r._id, "REJECTED")}
+                                onClick={() => updateStatus(r._id, "REJECTED", r.studentID)}
                               >
                                 Reject
                               </Button>

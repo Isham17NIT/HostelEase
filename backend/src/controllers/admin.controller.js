@@ -35,13 +35,40 @@ export const getDashboardStats = asyncHandler(async (req, res) => {
     Rebate.countDocuments({ status: "PENDING" }),
     Complaint.countDocuments({ status: "PENDING" }),
   ]);
-  return res.status(200).json(new ApiResponse(200, {
-    totalStudents,
-    pendingLeaves,
-    availableRooms,
-    pendingRebates,
-    openComplaints,
-  }, "Dashboard stats fetched successfully"))
+  
+  const stats = [
+    {
+      title: "Total Students",
+      value: totalStudents,
+      iconKey: "people",
+      color: "#2563eb",
+    },
+    {
+      title: "Pending Leaves",
+      value: pendingLeaves,
+      iconKey: "event",
+      color: "#f59e0b",
+    },
+    {
+      title: "Available Rooms",
+      value: availableRooms,
+      iconKey: "hotel",
+      color: "#22c55e",
+    },
+    {
+      title: "Pending Rebates",
+      value: pendingRebates,
+      iconKey: "currency",
+      color: "#0ea5e9",
+    },
+    {
+      title: "Open Complaints",
+      value: openComplaints,
+      iconKey: "report",
+      color: "#ef4444",
+    },
+  ];
+  return res.status(200).json(new ApiResponse(200, stats, "Dashboard stats fetched successfully"));
 });
 
 export const getRecentActivity = asyncHandler(async (req, res) => {
@@ -70,6 +97,7 @@ export const getPendingComplaints = asyncHandler(async (req, res) => {
     );
 });
 
+// TODO---> ADD pagination support here
 export const getPendingLeaves = asyncHandler(async (req, res) => {
   const pendingLeaves = await Leave.find({ status: "PENDING" });
   return res
@@ -79,6 +107,7 @@ export const getPendingLeaves = asyncHandler(async (req, res) => {
     );
 });
 
+// TODO---> ADD pagination support here
 export const getPendingRebates = asyncHandler(async (req, res) => {
   const pendingRebates = await Rebate.find({ status: "PENDING" });
   return res
@@ -94,7 +123,7 @@ export const getPendingRebates = asyncHandler(async (req, res) => {
 
 export const updateLeaveStatus = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  const { newStatus } = req.body;
+  const { newStatus, studentID } = req.body;
 
   const updatedLeave = await Leave.findByIdAndUpdate(
     id,
@@ -118,10 +147,11 @@ export const updateLeaveStatus = asyncHandler(async (req, res) => {
       try {
         await transporter.sendMail(mailOptions);
       } catch (error) {
-        console.log(error); // fix
+        console.log("Failed to send mail to parents");
       }
     }
   }
+  await Activity.create({ type: `LEAVE_${newStatus}`, desc:"for student: ", studentID  });
   return res
     .status(200)
     .json(
@@ -131,7 +161,7 @@ export const updateLeaveStatus = asyncHandler(async (req, res) => {
 
 export const updateRebateStatus = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  const { newStatus } = req.body;
+  const { newStatus, studentID } = req.body;
 
   const updatedRebate = await Rebate.findByIdAndUpdate(
     id,
@@ -141,6 +171,7 @@ export const updateRebateStatus = asyncHandler(async (req, res) => {
   if (!updatedRebate) {
     throw new ApiError(404, "Rebate request not found");
   }
+  await Activity.create({ type: `REBATE_${newStatus}`, desc:"for student: ", studentID  });
   return res
     .status(200)
     .json(
@@ -153,7 +184,7 @@ export const updateRebateStatus = asyncHandler(async (req, res) => {
 });
 
 export const updateComplaintStatus = asyncHandler(async (req, res) => {
-  const { newStatus } = req.body;
+  const { newStatus, studentID } = req.body;
   const { id } = req.params;
 
   const updatedComplaint = await Complaint.findByIdAndUpdate(
@@ -164,6 +195,7 @@ export const updateComplaintStatus = asyncHandler(async (req, res) => {
   if (!updatedComplaint) {
     throw new ApiError(404, "Complaint not found");
   }
+  await Activity.create({ type: `COMPLAINT_${newStatus}`, desc:"for student: ", studentID  });
   return res
     .status(200)
     .json(
