@@ -8,7 +8,7 @@ import {
   Stack,
   useTheme,
   CircularProgress,
-  Alert
+  Alert,
 } from "@mui/material";
 import PeopleIcon from "@mui/icons-material/People";
 import EventIcon from "@mui/icons-material/Event";
@@ -26,7 +26,7 @@ export default function AdminDashboard() {
   const [statsError, setStatsError] = useState("");
   const [activityLoading, setActivityLoading] = useState(false);
   const [activityError, setActivityError] = useState("");
-  const [activities, setActivities] = useState([])
+  const [activities, setActivities] = useState([]);
 
   const iconMap = {
     people: <PeopleIcon />,
@@ -40,15 +40,16 @@ export default function AdminDashboard() {
     setStatsError("");
     setStatsLoading(true);
     try {
-      const res = await api.get("/admin/dashboard/stats", { withCredentials: true });
-      
+      const res = await api.get("/admin/dashboard/stats", {
+        withCredentials: true,
+      });
+
       const statsWithIcons = (res.data?.data || []).map((item) => ({
         ...item,
         icon: iconMap[item.iconKey] || null,
-      }));  
+      }));
 
       setStats(statsWithIcons);
-
     } catch (error) {
       setStatsError(
         error.response?.data?.message || "Error while fetching dashboard stats",
@@ -59,14 +60,14 @@ export default function AdminDashboard() {
     }
   };
 
-  const getActivities = async()=>{
+  const getActivities = async () => {
     setActivityError("");
     setActivityLoading(true);
     try {
-      const res = await api.get("/admin/dashboard/activity", { withCredentials: true });
-
-      setActivities(res); // TODO : fix
-
+      const res = await api.get("/admin/dashboard/activity", {
+        withCredentials: true,
+      });
+      setActivities(res.data?.data?.results || [])
     } catch (error) {
       setActivityError(
         error.response?.data?.message || "Error while fetching recent activity",
@@ -75,7 +76,7 @@ export default function AdminDashboard() {
     } finally {
       setActivityLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
     getStats();
@@ -159,7 +160,7 @@ export default function AdminDashboard() {
         <Typography variant="h6" fontWeight="bold" mb={2}>
           Recent Activity
         </Typography>
-        
+
         <Card
           sx={{
             borderRadius: 3,
@@ -169,26 +170,15 @@ export default function AdminDashboard() {
         >
           <CardContent>
             <Stack spacing={2}>
-              {activities.map((activity)=>(
-                <ActivityItem
-                text={`${activity.type} ${activity.desc} ${activity.studentID}`}
-                label={activity.label}
-                color={activity.color}
-              />
+              {activities.map((activity) => (
+                <Typography>
+                    {`${activity.type} ${activity.desc}${activity.studentID ? activity.studentID : ''}`}
+                </Typography>
               ))}
             </Stack>
           </CardContent>
         </Card>
       </Box>
     </Box>
-  );
-}
-
-function ActivityItem({ text, label, color }) {
-  return (
-    <Stack direction="row" justifyContent="space-between" alignItems="center">
-      <Typography>{text}</Typography>
-      <Chip label={label} color={color} size="small" />
-    </Stack>
   );
 }

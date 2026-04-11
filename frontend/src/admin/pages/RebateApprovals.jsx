@@ -44,7 +44,7 @@ export default function ManageRebates() {
       const res = await api.get("/admin/rebates/pending", {
         withCredentials: true,
       });
-      setRebates(res.data?.data || []);
+      setRebates(res.data?.data?.results || []);
     } catch (error) {
       setRebates([]); // Ensures rebates is always an array
       setError(

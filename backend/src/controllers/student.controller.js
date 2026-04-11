@@ -9,6 +9,15 @@ import { Complaint } from "../models/complaint.model.js";
 import { User } from "../models/user.model.js";
 import { clearAuth } from "../utils/clearAuth.js";
 import { paginate } from "../utils/paginate.js";
+import nodemailer from "nodemailer";
+
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.MAIL_ID,
+    pass: process.env.MAIL_PASSWORD,
+  },
+});
 
 export const applyForLeave = asyncHandler(async (req, res) => {
   const { fromDate, toDate, address, purpose } = req.body;
@@ -42,13 +51,12 @@ export const applyForRebate = asyncHandler(async (req, res) => {
   const { fromDate, toDate } = req.body;
   const studentID = req.user.studentID;
 
-  if (!fromDate || !toDate)
-    throw new ApiError(400, "All fields are required");
+  if (!fromDate || !toDate) throw new ApiError(400, "All fields are required");
 
   if (!studentID) throw new ApiError(400, "Invalid request");
 
-  const from = new Date(fromDate)
-  const to = new Date(toDate)
+  const from = new Date(fromDate);
+  const to = new Date(toDate);
   const numDays = Math.ceil((to - from) / (1000 * 60 * 60 * 24)) + 1;
 
   const rebate = await Rebate.create({
@@ -101,12 +109,25 @@ export const changePassword = asyncHandler(async (req, res) => {
   const { newPassword } = req.body;
   const email = req.user.email;
 
-  if (!newPassword)
-    throw new ApiError(400, "Please provide password first!");
+  if (!newPassword) throw new ApiError(400, "Please provide password first!");
 
   const user = await User.findOne({ email });
   user.password = newPassword;
   await user.save();
+
+  // email the password to student
+  const mailOptions = {
+    from: process.env.MAIL_ID,
+    to: req.user.email,
+    subject: "Here's your new HostelEase password",
+    text: `Password: ${password}`,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+  } catch (error) {
+    console.log(error); //FIX
+  }
 
   await clearAuth(res, user);
 
@@ -120,6 +141,9 @@ export const changePassword = asyncHandler(async (req, res) => {
       )
     );
 });
+
+// TODO
+export const forgotPassword = asyncHandler(async (req, res) => {});
 
 export const getLeaves = asyncHandler(async (req, res) => {
   const studentID = req.user.studentID;
@@ -187,14 +211,18 @@ export const getComplaints = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, complaints, "Fetched complaints successfully"));
 });
 
-export const getProfile = asyncHandler(async(req, res) => {
+export const getProfile = asyncHandler(async (req, res) => {
   const studentID = req.user.studentID;
-  if(!studentID){
-    throw new ApiError(400, "Invalid Request!")
+  if (!studentID) {
+    throw new ApiError(400, "Invalid Request!");
   }
   const studentInfo = await Student.findById(studentID);
-  if(!studentInfo){
-    throw new ApiError(404, "Student not found!")
+  if (!studentInfo) {
+    throw new ApiError(404, "Student not found!");
   }
-  return res.status(200).json(new ApiResponse(200, studentInfo, "Fetched student info successfully"))
-})
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, studentInfo, "Fetched student info successfully")
+    );
+});

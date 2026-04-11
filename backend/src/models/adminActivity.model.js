@@ -1,5 +1,5 @@
 import mongoose from "mongoose"
-const activitySchema = new mongoose.Schema({
+const adminActivitySchema = new mongoose.Schema({
     type:{
         type: String,
         enum: [
@@ -30,4 +30,4 @@ const activitySchema = new mongoose.Schema({
     timestamps: true
 })
 
-export const Activity = mongoose.model("Activity", activitySchema)
+export const AdminActivity = mongoose.model("AdminActivity", adminActivitySchema)

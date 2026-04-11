@@ -76,7 +76,7 @@ export default function ManageComplaints() {
       const response = await api.get("/admin/complaints/pending", {
         withCredentials: true,
       });
-      setComplaints(response.data?.data || []);
+      setComplaints(response.data?.data?.results || []);
     } catch (error) {
       setError(
         error.response?.data?.message ||

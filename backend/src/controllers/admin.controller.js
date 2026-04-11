@@ -11,7 +11,7 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { User } from "../models/user.model.js";
 import nodemailer from "nodemailer";
 import { paginate } from "../utils/paginate.js";
-import { Activity } from "../models/activity.model.js";
+import { AdminActivity } from "../models/adminActivity.model.js";
 
 const transporter = nodemailer.createTransport({
   service: "gmail",
@@ -35,7 +35,7 @@ export const getDashboardStats = asyncHandler(async (req, res) => {
     Rebate.countDocuments({ status: "PENDING" }),
     Complaint.countDocuments({ status: "PENDING" }),
   ]);
-  
+
   const stats = [
     {
       title: "Total Students",
@@ -68,13 +68,15 @@ export const getDashboardStats = asyncHandler(async (req, res) => {
       color: "#ef4444",
     },
   ];
-  return res.status(200).json(new ApiResponse(200, stats, "Dashboard stats fetched successfully"));
+  return res
+    .status(200)
+    .json(new ApiResponse(200, stats, "Dashboard stats fetched successfully"));
 });
 
 export const getRecentActivity = asyncHandler(async (req, res) => {
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 10;
-  const activity = await paginate(Activity, {}, { createdAt: -1 }, page, limit);
+  const activity = await paginate(AdminActivity, {}, { createdAt: -1 }, page, limit);
 
   return res
     .status(200)
@@ -83,9 +85,16 @@ export const getRecentActivity = asyncHandler(async (req, res) => {
     );
 });
 
-// TODO---> ADD pagination support here
 export const getPendingComplaints = asyncHandler(async (req, res) => {
-  const pendingComplaints = await Complaint.find({ status: "PENDING" });
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
+  const pendingComplaints = await paginate(
+    Complaint,
+    { status: "PENDING" },
+    { createdAt: -1 },
+    page,
+    limit
+  );
   return res
     .status(200)
     .json(
@@ -97,19 +106,36 @@ export const getPendingComplaints = asyncHandler(async (req, res) => {
     );
 });
 
-// TODO---> ADD pagination support here
 export const getPendingLeaves = asyncHandler(async (req, res) => {
-  const pendingLeaves = await Leave.find({ status: "PENDING" });
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
+  const pendingLeaves = await paginate(
+    Leave,
+    { status: "PENDING" },
+    { createdAt: -1 },
+    page,
+    limit
+  );
   return res
     .status(200)
     .json(
-      new ApiResponse(200, pendingLeaves, "Pending leaves fetched successfully")
+      new ApiResponse(
+        200, 
+        pendingLeaves, 
+        "Pending leaves fetched successfully"
+      )
     );
 });
 
-// TODO---> ADD pagination support here
 export const getPendingRebates = asyncHandler(async (req, res) => {
-  const pendingRebates = await Rebate.find({ status: "PENDING" });
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
+  const pendingRebates = await paginate(Rebate,
+    { status: "PENDING" },
+    { createdAt: -1 },
+    page,
+    limit
+  );
   return res
     .status(200)
     .json(
@@ -151,7 +177,11 @@ export const updateLeaveStatus = asyncHandler(async (req, res) => {
       }
     }
   }
-  await Activity.create({ type: `LEAVE_${newStatus}`, desc:"for student: ", studentID  });
+  await AdminActivity.create({
+    type: `LEAVE_${newStatus}`,
+    desc: "for student: ",
+    studentID,
+  });
   return res
     .status(200)
     .json(
@@ -171,7 +201,11 @@ export const updateRebateStatus = asyncHandler(async (req, res) => {
   if (!updatedRebate) {
     throw new ApiError(404, "Rebate request not found");
   }
-  await Activity.create({ type: `REBATE_${newStatus}`, desc:"for student: ", studentID  });
+  await AdminActivity.create({
+    type: `REBATE_${newStatus}`,
+    desc: "for student: ",
+    studentID,
+  });
   return res
     .status(200)
     .json(
@@ -195,7 +229,11 @@ export const updateComplaintStatus = asyncHandler(async (req, res) => {
   if (!updatedComplaint) {
     throw new ApiError(404, "Complaint not found");
   }
-  await Activity.create({ type: `COMPLAINT_${newStatus}`, desc:"for student: ", studentID  });
+  await AdminActivity.create({
+    type: `COMPLAINT_${newStatus}`,
+    desc: "for student: ",
+    studentID,
+  });
   return res
     .status(200)
     .json(
@@ -233,6 +271,10 @@ export const addRoom = asyncHandler(async (req, res) => {
     throw new ApiError(409, "Room already exists");
   }
   const newRoom = await Room.create({ roomNum });
+  await AdminActivity.create({
+    type: 'ROOM_ADDED',
+    desc: `${roomNum}`
+  })
   return res
     .status(201)
     .json(new ApiResponse(201, newRoom, "Room added successfully"));
@@ -329,8 +371,14 @@ export const registerStudent = asyncHandler(async (req, res) => {
   try {
     await transporter.sendMail(mailOptions);
   } catch (error) {
-    console.log(error); // fix
+    console.log(error); //FIX
   }
+
+  await AdminActivity.create({
+    type: 'STUDENT_ADDED',
+    desc: "with studentId: ",
+    studentID: user.studentID,
+  });
 
   return res
     .status(201)
@@ -366,12 +414,19 @@ export const deleteStudent = asyncHandler(async (req, res) => {
     await User.deleteOne({ studentID: student._id });
   }
 
+  await AdminActivity.create({
+    type: 'STUDENT_DELETED',
+    desc: 'with studentID:',
+    studentID: student._id
+  })
+
   return res
     .status(200)
     .json(new ApiResponse(200, null, "Student deleted successfully!"));
 });
 
 // -----------------need to check updateStudent-----------------------
+// Todo---> activity creation
 export const updateStudentDetails = asyncHandler(async (req, res) => {
   const { rollNum } = req.params;
   const fieldsToUpdate = req.body;
@@ -420,3 +475,4 @@ export const updateStudentDetails = asyncHandler(async (req, res) => {
       new ApiResponse(200, student, "Student details updated successfully!")
     );
 });
+

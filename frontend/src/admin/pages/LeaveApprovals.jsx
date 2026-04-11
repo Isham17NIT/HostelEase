@@ -30,7 +30,7 @@ export default function LeaveApprovals() {
     setError("");
     try {
       const res = await api.get("/admin/leaves/pending", { withCredentials: true });
-      setLeaves(res.data?.data || []);
+      setLeaves(res.data?.data?.results || []);
     } catch (error) {
       setLeaves([]);
       setError(error.response?.data?.message || "Error while fetching leaves");
