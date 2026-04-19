@@ -15,22 +15,40 @@ import {
   Stack,
   useMediaQuery,
   Alert,
-  CircularProgress
+  CircularProgress,
+  Pagination,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
 } from "@mui/material";
 import { useState, useEffect } from "react";
 import api from "../../api/axiosInstance";
 
 export default function LeaveApprovals() {
+  const isMobile = useMediaQuery("(max-width:768px)");
+
   const [leaves, setLeaves] = useState([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const getPendingLeaves = async () => {
+  const [limit, setLimit] = useState(isMobile ? 3 : 5);
+  const [pageNum, setPageNum] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+
+  const getPendingLeaves = async (pageNum = 1, limit = isMobile ? 3 : 5) => {
     setLoading(true);
     setError("");
     try {
-      const res = await api.get("/admin/leaves/pending", { withCredentials: true });
+      const res = await api.get("/admin/leaves/pending", {
+        params: { limit: isMobile ? 3 : 5, page: pageNum },
+        withCredentials: true,
+      });
+
       setLeaves(res.data?.data?.results || []);
+      setPageNum(res.data?.data?.page || pageNum);
+      setTotalPages(res.data?.data?.totalPages || 1);
+      setLimit(res.data?.data?.limit || (isMobile ? 3 : 5));
     } catch (error) {
       setLeaves([]);
       setError(error.response?.data?.message || "Error while fetching leaves");
@@ -38,7 +56,6 @@ export default function LeaveApprovals() {
       setLoading(false);
     }
   };
-  const isMobile = useMediaQuery("(max-width:768px)");
 
   const updateStatus = async (id, newStatus, studentID) => {
     setError("");
@@ -49,7 +66,7 @@ export default function LeaveApprovals() {
         { newStatus, studentID },
         { withCredentials: true },
       );
-      await getPendingLeaves();
+      await getPendingLeaves(pageNum);
     } catch (error) {
       setLeaves([]);
       setError(
@@ -62,8 +79,12 @@ export default function LeaveApprovals() {
   };
 
   useEffect(() => {
-    getPendingLeaves();
-  }, []);
+    getPendingLeaves(pageNum, limit);
+  }, [pageNum, limit, isMobile]);
+
+  useEffect(() => {
+    setLimit(isMobile ? 3 : 5);
+  }, [isMobile]);
 
   const getStatusChip = (status) => {
     if (status === "APPROVED") return "success";
@@ -73,7 +94,7 @@ export default function LeaveApprovals() {
 
   const formatDate = (dateString) => {
     if (!dateString) return "N/A";
-    return dateString.split('T')[0];
+    return dateString.split("T")[0];
   };
 
   return (
@@ -130,7 +151,9 @@ export default function LeaveApprovals() {
                         size="small"
                         variant="contained"
                         color="success"
-                        onClick={() => updateStatus(row._id, "APPROVED", row.studentID)}
+                        onClick={() =>
+                          updateStatus(row._id, "APPROVED", row.studentID)
+                        }
                       >
                         Approve
                       </Button>
@@ -138,7 +161,9 @@ export default function LeaveApprovals() {
                         size="small"
                         variant="outlined"
                         color="error"
-                        onClick={() => updateStatus(row._id, "REJECTED", row.studentID)}
+                        onClick={() =>
+                          updateStatus(row._id, "REJECTED", row.studentID)
+                        }
                       >
                         Reject
                       </Button>
@@ -148,6 +173,33 @@ export default function LeaveApprovals() {
               </CardContent>
             </Card>
           ))}
+          <Box display="flex" justifyContent="center" mt={3}>
+            <Pagination
+              count={totalPages}
+              page={pageNum}
+              onChange={(e, value) => setPageNum(value)}
+              color="primary"
+            />
+          </Box>
+          {/* Limit Selector */}
+          <Box mb={2} ml={2} display="flex" alignItems="center" gap={2}>
+            <FormControl size="small" sx={{ minWidth: 120 }}>
+              <InputLabel id="limit-label">Rows Per Page</InputLabel>
+              <Select
+                labelId="limit-label"
+                id="limit-select"
+                value={limit}
+                label="Per Page"
+                onChange={(e) => {
+                  setLimit(e.target.value);
+                  setPageNum(1); // Reset to first page when limit changes
+                }}
+              >
+                <MenuItem value={3}>3</MenuItem>
+                <MenuItem value={5}>5</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
         </Stack>
       ) : (
         /* DESKTOP VIEW */
@@ -213,7 +265,9 @@ export default function LeaveApprovals() {
                               size="small"
                               variant="contained"
                               color="success"
-                              onClick={() => updateStatus(row._id, "APPROVED", row.studentID)}
+                              onClick={() =>
+                                updateStatus(row._id, "APPROVED", row.studentID)
+                              }
                             >
                               APPROVE
                             </Button>
@@ -221,7 +275,9 @@ export default function LeaveApprovals() {
                               size="small"
                               variant="outlined"
                               color="error"
-                              onClick={() => updateStatus(row._id, "REJECTED", row.studentID)}
+                              onClick={() =>
+                                updateStatus(row._id, "REJECTED", row.studentID)
+                              }
                             >
                               REJECT
                             </Button>
@@ -238,6 +294,33 @@ export default function LeaveApprovals() {
               </Table>
             </TableContainer>
           </CardContent>
+          <Box display="flex" justifyContent="center" mt={3}>
+            <Pagination
+              count={totalPages}
+              page={pageNum}
+              onChange={(e, value) => setPageNum(value)}
+              color="primary"
+            />
+          </Box>
+          {/* Limit Selector */}
+          <Box mb={2} ml={2} display="flex" alignItems="center" gap={2}>
+            <FormControl size="small" sx={{ minWidth: 120 }}>
+              <InputLabel id="limit-label">Rows Per Page</InputLabel>
+              <Select
+                labelId="limit-label"
+                id="limit-select"
+                value={limit}
+                label="Per Page"
+                onChange={(e) => {
+                  setLimit(e.target.value);
+                  setPageNum(1); // Reset to first page when limit changes
+                }}
+              >
+                <MenuItem value={3}>3</MenuItem>
+                <MenuItem value={5}>5</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
         </Card>
       )}
     </Box>

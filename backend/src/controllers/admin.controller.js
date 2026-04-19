@@ -30,7 +30,7 @@ export const getDashboardStats = asyncHandler(async (req, res) => {
     openComplaints,
   ] = await Promise.all([
     Student.countDocuments(),
-    Leave.countDocuments({ staus: "PENDING" }),
+    Leave.countDocuments({ status: "PENDING" }),
     Room.countDocuments({ status: "VACANT" }),
     Rebate.countDocuments({ status: "PENDING" }),
     Complaint.countDocuments({ status: "PENDING" }),

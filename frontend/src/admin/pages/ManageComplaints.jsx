@@ -17,6 +17,11 @@ import {
   useMediaQuery,
   CircularProgress,
   Alert,
+  Pagination,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
 } from "@mui/material";
 import api from "../../api/axiosInstance.js";
 
@@ -25,7 +30,6 @@ const STATUS_COLORS = {
   RESOLVED: "success",
 };
 
-/* Expandable Text  */
 function ExpandableText({ text, lines = 2 }) {
   const [expanded, setExpanded] = useState(false);
   const isLong = text.length > 80;
@@ -59,24 +63,36 @@ function ExpandableText({ text, lines = 2 }) {
 
 export default function ManageComplaints() {
   const isMobile = useMediaQuery("(max-width:768px)");
+
   const [complaints, setComplaints] = useState([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const [limit, setLimit] = useState(isMobile ? 3 : 5);
+  const [pageNum, setPageNum] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
   const formatDate = (dateString) => {
     if (!dateString) return "N/A";
     return dateString.split("T")[0];
   };
 
-  const getPendingComplaints = async () => {
+  const getPendingComplaints = async (
+    pageNum = 1,
+    limit = isMobile ? 3 : 5,
+  ) => {
     setError("");
     setLoading(true);
-    
     try {
       const response = await api.get("/admin/complaints/pending", {
+        params: { limit: limit, page: pageNum },
         withCredentials: true,
       });
+
       setComplaints(response.data?.data?.results || []);
+      setPageNum(response.data?.data?.page || pageNum);
+      setTotalPages(response.data?.data?.totalPages || 1);
+      setLimit(response.data?.data?.limit || (isMobile ? 3 : 5));
     } catch (error) {
       setError(
         error.response?.data?.message ||
@@ -88,21 +104,16 @@ export default function ManageComplaints() {
     }
   };
 
-  useEffect(() => {
-    getPendingComplaints();
-  }, []);
-
-  const handleResolve = async(id, studentID) => {
-    setError("");
+  const updateComplaintStatus = async (id, studentID) => {
     setLoading(true);
-
+    setError("");
     try {
       const response = await api.patch(
         `/admin/complaints/${id}`,
         { newStatus: "RESOLVED", studentID },
         { withCredentials: true },
       );
-      await getPendingComplaints();
+      await getPendingComplaints(pageNum, limit);
     } catch (error) {
       setError(
         error.response?.data?.message ||
@@ -112,6 +123,14 @@ export default function ManageComplaints() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    getPendingComplaints(pageNum, limit);
+  }, [pageNum, limit, isMobile]);
+
+  useEffect(()=>{
+    setLimit(isMobile ? 3 : 5);
+  }, [isMobile]);
 
   return (
     <Box p={2}>
@@ -166,7 +185,7 @@ export default function ManageComplaints() {
                     <Button
                       size="small"
                       variant="outlined"
-                      onClick={()=>handleResolve(c._id, c.studentID)}
+                      onClick={() => updateComplaintStatus(c._id, c.studentID)}
                     >
                       Resolve
                     </Button>
@@ -175,6 +194,33 @@ export default function ManageComplaints() {
               </CardContent>
             </Card>
           ))}
+          <Box display="flex" justifyContent="center" mt={3}>
+            <Pagination
+              count={totalPages}
+              page={pageNum}
+              onChange={(e, value) => setPageNum(value)}
+              color="primary"
+            />
+          </Box>
+          {/* Limit Selector */}
+          <Box mb={2} ml={2} display="flex" alignItems="center" gap={2}>
+            <FormControl size="small" sx={{ minWidth: 120 }}>
+              <InputLabel id="limit-label">Rows Per Page</InputLabel>
+              <Select
+                labelId="limit-label"
+                id="limit-select"
+                value={limit}
+                label="Per Page"
+                onChange={(e) => {
+                  setLimit(e.target.value);
+                  setPageNum(1); // Reset to first page when limit changes
+                }}
+              >
+                <MenuItem value={3}>3</MenuItem>
+                <MenuItem value={5}>5</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
         </Stack>
       ) : (
         /* DESKTOP VIEW */
@@ -232,7 +278,7 @@ export default function ManageComplaints() {
                             <Button
                               size="small"
                               variant="outlined"
-                              onClick={()=>handleResolve(c._id, c.studentID)}
+                              onClick={() => updateComplaintStatus(c._id, c.studentID)}
                             >
                               Resolve
                             </Button>
@@ -245,6 +291,33 @@ export default function ManageComplaints() {
               </Table>
             </TableContainer>
           </CardContent>
+          <Box display="flex" justifyContent="center" mt={3}>
+            <Pagination
+              count={totalPages}
+              page={pageNum}
+              onChange={(e, value) => setPageNum(value)}
+              color="primary"
+            />
+          </Box>
+          <Box mb={2} ml={2} display="flex" alignItems="center" gap={2}>
+            <FormControl size="small" sx={{ minWidth: 120 }}>
+              <InputLabel id="limit-label">Rows Per Page</InputLabel>
+              <Select
+                labelId="limit-label"
+                id="limit-select"
+                value={limit}
+                label="Per Page"
+                onChange={(e) => {
+                  setLimit(e.target.value);
+                  setPageNum(1); // Reset to first page when limit changes
+                }}
+              >
+                <MenuItem value={3}>3</MenuItem>
+                <MenuItem value={5}>5</MenuItem>
+                <MenuItem value={10}>10</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
         </Card>
       )}
     </Box>

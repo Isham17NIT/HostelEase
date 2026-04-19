@@ -10,7 +10,7 @@ import {
   CircularProgress,
   useMediaQuery,
   Alert,
-  Pagination
+  Pagination,
 } from "@mui/material";
 import PeopleIcon from "@mui/icons-material/People";
 import EventIcon from "@mui/icons-material/Event";
@@ -34,7 +34,6 @@ export default function AdminDashboard() {
 
   const [pageNum, setPageNum] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [totalCount, setTotalCount] = useState(0);
 
   const iconMap = {
     people: <PeopleIcon />,
@@ -79,9 +78,7 @@ export default function AdminDashboard() {
 
       setActivities(res.data?.data?.results || []);
       setTotalPages(res.data?.data?.totalPages || 1);
-      setTotalCount(res.data?.data?.totalResults || 0);
-      setPageNum(res.data?.data?.pageNum || pageNum);
-
+      setPageNum(res.data?.data?.page || pageNum);
     } catch (error) {
       setActivityError(
         error.response?.data?.message || "Error while fetching recent activity",
@@ -182,7 +179,7 @@ export default function AdminDashboard() {
             borderRadius: 3,
             bgcolor: isDark ? "#020617" : "#ffffff",
             boxShadow: isDark ? "none" : "0 4px 20px rgba(0,0,0,0.08)",
-            minHeight: '400px'
+            minHeight: "400px",
           }}
         >
           <CardContent>
