@@ -8,7 +8,9 @@ import {
   Stack,
   useTheme,
   CircularProgress,
+  useMediaQuery,
   Alert,
+  Pagination
 } from "@mui/material";
 import PeopleIcon from "@mui/icons-material/People";
 import EventIcon from "@mui/icons-material/Event";
@@ -27,6 +29,12 @@ export default function AdminDashboard() {
   const [activityLoading, setActivityLoading] = useState(false);
   const [activityError, setActivityError] = useState("");
   const [activities, setActivities] = useState([]);
+
+  const isMobile = useMediaQuery("(max-width:768px)");
+
+  const [pageNum, setPageNum] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
 
   const iconMap = {
     people: <PeopleIcon />,
@@ -60,14 +68,20 @@ export default function AdminDashboard() {
     }
   };
 
-  const getActivities = async () => {
+  const getActivities = async (pageNum = 1) => {
     setActivityError("");
     setActivityLoading(true);
     try {
       const res = await api.get("/admin/dashboard/activity", {
+        params: { limit: isMobile ? 5 : 10, page: pageNum },
         withCredentials: true,
       });
-      setActivities(res.data?.data?.results || [])
+
+      setActivities(res.data?.data?.results || []);
+      setTotalPages(res.data?.data?.totalPages || 1);
+      setTotalCount(res.data?.data?.totalResults || 0);
+      setPageNum(res.data?.data?.pageNum || pageNum);
+
     } catch (error) {
       setActivityError(
         error.response?.data?.message || "Error while fetching recent activity",
@@ -80,10 +94,12 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     getStats();
-    getActivities();
   }, []);
 
-  // TODO : fix rendering
+  useEffect(() => {
+    getActivities(pageNum);
+  }, [pageNum]);
+
   if (statsLoading) {
     return (
       <Box py={6} display="flex" justifyContent="center">
@@ -166,18 +182,27 @@ export default function AdminDashboard() {
             borderRadius: 3,
             bgcolor: isDark ? "#020617" : "#ffffff",
             boxShadow: isDark ? "none" : "0 4px 20px rgba(0,0,0,0.08)",
+            minHeight: '400px'
           }}
         >
           <CardContent>
             <Stack spacing={2}>
               {activities.map((activity) => (
-                <Typography>
-                    {`${activity.type} ${activity.desc}${activity.studentID ? activity.studentID : ''}`}
+                <Typography key={activity._id}>
+                  {`${activity.type} ${activity.desc}${activity.studentID ? activity.studentID : ""}`}
                 </Typography>
               ))}
             </Stack>
           </CardContent>
         </Card>
+        <Box display="flex" justifyContent="center" mt={3}>
+          <Pagination
+            count={totalPages}
+            page={pageNum}
+            onChange={(e, value) => setPageNum(value)}
+            color="primary"
+          />
+        </Box>
       </Box>
     </Box>
   );
