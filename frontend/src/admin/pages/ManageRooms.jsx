@@ -19,11 +19,10 @@ export default function ManageRooms() {
   const [roomNum, setRoomNum] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [msg, setMsg] = useState("")
+  const [msg, setMsg] = useState("");
 
-  const handleCheckAvailability = async() => {
-
-    setMsg("")
+  const handleCheckAvailability = async () => {
+    setMsg("");
     setError("");
 
     if (!roomNum) {
@@ -33,95 +32,79 @@ export default function ManageRooms() {
     setLoading(true);
 
     // backend api call
-    try{
+    try {
       const response = await api.post(
-        "admin/rooms/check-availability", 
+        "admin/rooms/check-availability",
         {
-          roomNum
+          roomNum,
         },
-        { withCredentials: true }
-      )
+        { withCredentials: true },
+      );
 
       const roomStatus = response.data.data.status;
-      setMsg(`Room is ${roomStatus}`)        
-
-    }catch(error){
-      setMsg("")
-      setError(
-        error.response?.data?.message ||
-          "Room Check failed!",
-      );
-    }finally{
-      setLoading(false)
+      setMsg(`Room is ${roomStatus}`);
+    } catch (error) {
+      setMsg("");
+      setError(error.response?.data?.message || "Room Check failed!");
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleAddRoom = async() => {
-    setMsg("")
-    setError("")
+  const handleAddRoom = async () => {
+    setMsg("");
+    setError("");
 
     if (!roomNum) {
       return;
     }
 
-    setLoading(true)
+    setLoading(true);
 
     //backend api call
-    try{
+    try {
       const response = await api.post(
         "/admin/rooms/add",
         {
-          roomNum
+          roomNum,
         },
-        { withCredentials: true }
-      )
-      setMsg("Room added successfully")
-
-    }catch(error){
-      setMsg("")
-      setError(
-        error.response?.data?.message ||
-        "Add room failed!"
-      )
-    }finally{
-      setLoading(false)
+        { withCredentials: true },
+      );
+      setMsg("Room added successfully");
+    } catch (error) {
+      setMsg("");
+      setError(error.response?.data?.message || "Add room failed!");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <Box
-      sx={{
-        px: { xs: 2, sm: 3, md: 4 },
-        py: { xs: 2, sm: 3 },
-        maxWidth: "800px",
-        mx: "auto",
-      }}
+      sx={{ width: "100%", display: "flex", justifyContent: "center", p: 2 }}
     >
-      <Typography
-        variant="h5"
-        fontWeight="bold"
-        mb={3}
-        textAlign={{ xs: "center", sm: "left" }}
-      >
-        Manage Rooms
-      </Typography>
-
-      <Card>
+      <Card sx={{ boxShadow: 3, borderRadius:"10px", minHeight:"250px" }}>
         <CardContent>
-          <Typography variant="h6" mb={2}>
+          <Typography
+            variant="h5"
+            fontWeight="bold"
+            mb={3}
+            textAlign={{ xs: "center", sm: "left" }}
+          >
             Room Actions
           </Typography>
 
           <Stack spacing={3}>
             <TextField
               required
+              pt={3}
               label="Room Number"
               fullWidth
               value={roomNum}
               onChange={(e) => {
-                setRoomNum(e.target.value)
-                setMsg("")
-                setError("")
+                setRoomNum(e.target.value);
+                setMsg("");
+                setError("");
               }}
             />
 

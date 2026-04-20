@@ -87,6 +87,9 @@ export default function ApplyRebate() {
         margin="normal"
         name="fromDate"
         InputLabelProps={{ shrink: true }}
+        inputProps={{
+          onClick: (e) => e.target.showPicker(),
+        }}
         sx={{
           "& input::-webkit-calendar-picker-indicator": {
             filter: mode === "dark" ? "invert(1)" : "none",
@@ -104,6 +107,9 @@ export default function ApplyRebate() {
         margin="normal"
         name="toDate"
         InputLabelProps={{ shrink: true }}
+        inputProps={{
+          onClick: (e) => e.target.showPicker(),
+        }}
         sx={{
           "& input::-webkit-calendar-picker-indicator": {
             filter: mode === "dark" ? "invert(1)" : "none",

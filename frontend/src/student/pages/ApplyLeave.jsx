@@ -73,7 +73,7 @@ export default function ApplyLeave() {
           {error}
         </Alert>
       )}
-      
+
       {msg && (
         <Box mb={2}>
           <Typography color="success.main" fontWeight="bold">
@@ -90,6 +90,9 @@ export default function ApplyLeave() {
         value={formData.fromDate}
         name="fromDate"
         InputLabelProps={{ shrink: true }}
+        inputProps={{
+          onClick: (e) => e.target.showPicker(), // 👈 key line
+        }}
         sx={{
           "& input::-webkit-calendar-picker-indicator": {
             filter: mode === "dark" ? "invert(1)" : "none",
@@ -107,6 +110,9 @@ export default function ApplyLeave() {
         value={formData.toDate}
         name="toDate"
         InputLabelProps={{ shrink: true }}
+        inputProps={{
+          onClick: (e) => e.target.showPicker(),
+        }}
         sx={{
           "& input::-webkit-calendar-picker-indicator": {
             filter: mode === "dark" ? "invert(1)" : "none",
