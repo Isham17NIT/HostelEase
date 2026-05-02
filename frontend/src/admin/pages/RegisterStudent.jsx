@@ -93,10 +93,16 @@ export default function RegisterStudent() {
         setSuccess("");
         setFormData({ ...formData, [name]: e.target.value });
       }}
+      onClick={(e) => {
+        if (type === "date") {
+          e.target.showPicker?.();
+        }
+      }}
       InputLabelProps={{ shrink: true }}
       sx={{
         "& input::-webkit-calendar-picker-indicator": {
-          filter: mode === "dark" ? "invert(1)" : "none",
+          filter: mode === "dark" ? "invert(0)" : "invert(1)",
+          cursor: "pointer"
         },
       }}
       required
@@ -198,9 +204,7 @@ export default function RegisterStudent() {
           Address
         </Typography>
 
-        <Box mb={4}>
-          {renderField("House Address", "address", "text")}
-        </Box>
+        <Box mb={4}>{renderField("House Address", "address", "text")}</Box>
 
         {/* BUTTON */}
         <Button

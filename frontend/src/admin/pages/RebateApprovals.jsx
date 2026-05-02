@@ -17,12 +17,15 @@ import {
   useMediaQuery,
   Alert,
   CircularProgress,
-  Pagination,
   FormControl,
   InputLabel,
   Select,
   MenuItem,
 } from "@mui/material";
+import IconButton from "@mui/material/IconButton";
+import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
+import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
+
 import api from "../../api/axiosInstance";
 
 const STATUS_COLORS = {
@@ -211,13 +214,35 @@ export default function ManageRebates() {
             </Box>
 
             <Box display="flex" justifyContent="center">
-              <Pagination
-                count={totalPages}
-                page={pageNum}
-                onChange={(e, value) => setPageNum(value)}
-                color="primary"
-                shape="rounded"
-              />
+              <Box
+                display="flex"
+                justifyContent="center"
+                alignItems="center"
+                gap={1}
+              >
+                <IconButton
+                  onClick={() => setPageNum((prev) => prev - 1)}
+                  disabled={pageNum === 1}
+                >
+                  <KeyboardArrowLeft />
+                </IconButton>
+                <Typography
+                  sx={{
+                    minWidth: 32,
+                    textAlign: "center",
+                    fontWeight: 600,
+                  }}
+                >
+                  {pageNum}
+                </Typography>
+
+                <IconButton
+                  onClick={() => setPageNum((prev) => prev + 1)}
+                  disabled={pageNum === totalPages}
+                >
+                  <KeyboardArrowRight />
+                </IconButton>
+              </Box>
             </Box>
 
             <Box />
@@ -330,13 +355,35 @@ export default function ManageRebates() {
               </FormControl>
             </Box>
             <Box display="flex" justifyContent="center">
-              <Pagination
-                count={totalPages}
-                page={pageNum}
-                onChange={(e, value) => setPageNum(value)}
-                color="primary"
-                shape="rounded"
-              />
+              <Box
+                display="flex"
+                justifyContent="center"
+                alignItems="center"
+                gap={1}
+              >
+                <IconButton
+                  onClick={() => setPageNum((prev) => prev - 1)}
+                  disabled={pageNum === 1}
+                >
+                  <KeyboardArrowLeft />
+                </IconButton>
+                <Typography
+                  sx={{
+                    minWidth: 32,
+                    textAlign: "center",
+                    fontWeight: 600,
+                  }}
+                >
+                  {pageNum}
+                </Typography>
+
+                <IconButton
+                  onClick={() => setPageNum((prev) => prev + 1)}
+                  disabled={pageNum === totalPages}
+                >
+                  <KeyboardArrowRight />
+                </IconButton>
+              </Box>
             </Box>
             <Box />
           </Box>

@@ -16,12 +16,14 @@ import {
   useMediaQuery,
   Alert,
   CircularProgress,
-  Pagination,
   FormControl,
   InputLabel,
   Select,
   MenuItem,
 } from "@mui/material";
+import IconButton from "@mui/material/IconButton";
+import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
+import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
 import { useState, useEffect } from "react";
 import api from "../../api/axiosInstance";
 
@@ -49,7 +51,6 @@ export default function LeaveApprovals() {
       setPageNum(res.data?.data?.page || pageNum);
       setTotalPages(res.data?.data?.totalPages || 1);
       setLimit(res.data?.data?.limit || (isMobile ? 3 : 5));
-
     } catch (error) {
       setLeaves([]);
       setError(error.response?.data?.message || "Error while fetching leaves");
@@ -200,14 +201,34 @@ export default function LeaveApprovals() {
                 </Select>
               </FormControl>
             </Box>
-            <Box display="flex" justifyContent="center">
-              <Pagination
-                count={totalPages}
-                page={pageNum}
-                onChange={(e, value) => setPageNum(value)}
-                color="primary"
-                shape="rounded"
-              />
+            <Box
+              display="flex"
+              justifyContent="center"
+              alignItems="center"
+              gap={1}
+            >
+              <IconButton
+                onClick={() => setPageNum((prev) => prev - 1)}
+                disabled={pageNum === 1}
+              >
+                <KeyboardArrowLeft />
+              </IconButton>
+              <Typography
+                sx={{
+                  minWidth: 32,
+                  textAlign: "center",
+                  fontWeight: 600,
+                }}
+              >
+                {pageNum}
+              </Typography>
+
+              <IconButton
+                onClick={() => setPageNum((prev) => prev + 1)}
+                disabled={pageNum === totalPages}
+              >
+                <KeyboardArrowRight />
+              </IconButton>
             </Box>
             <Box />
           </Box>
@@ -339,14 +360,34 @@ export default function LeaveApprovals() {
                 </Select>
               </FormControl>
             </Box>
-            <Box display="flex" justifyContent="center">
-              <Pagination
-                count={totalPages}
-                page={pageNum}
-                onChange={(e, value) => setPageNum(value)}
-                color="primary"
-                shape="rounded"
-              />
+            <Box
+              display="flex"
+              justifyContent="center"
+              alignItems="center"
+              gap={1}
+            >
+              <IconButton
+                onClick={() => setPageNum((prev) => prev - 1)}
+                disabled={pageNum === 1}
+              >
+                <KeyboardArrowLeft />
+              </IconButton>
+              <Typography
+                sx={{
+                  minWidth: 32,
+                  textAlign: "center",
+                  fontWeight: 600,
+                }}
+              >
+                {pageNum}
+              </Typography>
+
+              <IconButton
+                onClick={() => setPageNum((prev) => prev + 1)}
+                disabled={pageNum === totalPages}
+              >
+                <KeyboardArrowRight />
+              </IconButton>
             </Box>
             <Box />
           </Box>

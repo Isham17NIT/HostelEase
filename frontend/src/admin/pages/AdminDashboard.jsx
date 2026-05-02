@@ -10,7 +10,6 @@ import {
   CircularProgress,
   useMediaQuery,
   Alert,
-  Pagination,
   FormControl,
   Select,
   MenuItem,
@@ -20,6 +19,9 @@ import EventIcon from "@mui/icons-material/Event";
 import HotelIcon from "@mui/icons-material/Hotel";
 import ReportIcon from "@mui/icons-material/Report";
 import CurrencyRupeeIcon from "@mui/icons-material/CurrencyRupee";
+import IconButton from "@mui/material/IconButton";
+import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
+import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
 import { useState, useEffect } from "react";
 import api from "../../api/axiosInstance";
 
@@ -193,7 +195,7 @@ export default function AdminDashboard() {
             flexDirection: "column",
           }}
         >
-          <CardContent sx={{flexGrow: 1}}>
+          <CardContent sx={{ flexGrow: 1 }}>
             <Stack spacing={2}>
               {activities.map((activity) => (
                 <Typography key={activity._id}>
@@ -215,9 +217,10 @@ export default function AdminDashboard() {
             }}
           >
             <Box display="flex" alignItems="center" gap={2}>
-              <Typography variant="body2" color="text.secondary">
+              {!isMobile && (<Typography variant="body2" color="text.secondary">
                 Rows per page
-              </Typography>
+              </Typography>)}
+              
               <FormControl size="small" sx={{ minWidth: 90 }}>
                 <Select
                   value={limit}
@@ -231,14 +234,34 @@ export default function AdminDashboard() {
                 </Select>
               </FormControl>
             </Box>
-            <Box display="flex" justifyContent="center">
-              <Pagination
-                count={totalPages}
-                page={pageNum}
-                onChange={(e, value) => setPageNum(value)}
-                color="primary"
-                shape="rounded"
-              />
+            <Box
+              display="flex"
+              justifyContent="center"
+              alignItems="center"
+              gap={1}
+            >
+              <IconButton
+                onClick={() => setPageNum((prev) => prev - 1)}
+                disabled={pageNum === 1}
+              >
+                <KeyboardArrowLeft />
+              </IconButton>
+              <Typography
+                sx={{
+                  minWidth: 32,
+                  textAlign: "center",
+                  fontWeight: 600,
+                }}
+              >
+                {pageNum}
+              </Typography>
+
+              <IconButton
+                onClick={() => setPageNum((prev) => prev + 1)}
+                disabled={pageNum === totalPages}
+              >
+                <KeyboardArrowRight />
+              </IconButton>
             </Box>
             <Box />
           </Box>
