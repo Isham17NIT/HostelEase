@@ -39,31 +39,38 @@ const FIELD_CONFIG = {
 };
 
 export default function UpdateStudent() {
-  // UPDATE STATES
-  const [rollNumber, setRollNumber] = useState("");
+  const [rollNum, setRollNum] = useState("");
   const [selectedFields, setSelectedFields] = useState([]); // array of field keys
   const [fieldValues, setFieldValues] = useState({});
+  const [deleteRollNum, setDeleteRollNum] = useState("");
 
-  // DELETE STATES
-  const [deleteRollNumber, setDeleteRollNumber] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [msg, setMsg] = useState("");
 
-  // Handle checkbox select/deselect
+  const [updateError, setUpdateError] = useState("");
+  const [updateMsg, setUpdateMsg] = useState("");
+
   const handleFieldSelect = (key) => {
     setSelectedFields((prev) =>
       prev.includes(key) ? prev.filter((f) => f !== key) : [...prev, key],
     );
   };
 
-  // Handle input change for each field
   const handleFieldChange = (key, value) => {
     setFieldValues((prev) => ({ ...prev, [key]: value }));
   };
 
-  const handleUpdate = () => {
-    if (!rollNumber || selectedFields.length === 0) {
-      alert("Please fill all required fields");
+  const handleUpdate = async() => {
+    setUpdateError("");
+    setUpdateMsg("");
+    setError("");
+    setMsg("");
+
+    if (!rollNum || selectedFields.length === 0) {
       return;
     }
+
     // Check all selected fields have values
     for (const key of selectedFields) {
       if (!fieldValues[key]) {
@@ -71,24 +78,48 @@ export default function UpdateStudent() {
         return;
       }
     }
-    // Prepare update object
-    const updateData = { rollNumber };
+
+    setLoading(true);
+
+    const updateData = {};
     selectedFields.forEach((key) => {
       updateData[key] = fieldValues[key];
     });
-    console.log(updateData);
-    // TODO: API call here
+
+    try {
+      const res = await api.put(`/admin/students/update/${rollNum}`, updateData, {
+        withCredentials: true,
+      });
+      setUpdateMsg("Student details updated successfully");
+    } catch (error) {
+      setUpdateError(
+        error.response?.data?.message || "Updation of student info failed!",
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleDelete = () => {
-    if (!deleteRollNumber) {
-      alert("Roll number is required");
-      return;
+  const handleDelete = async () => {
+    setError("");
+    setMsg("");
+    setUpdateError("");
+    setUpdateMsg("");
+
+    if (!deleteRollNum) return;
+
+    setLoading(true);
+    try {
+      const res = await api.delete(`/admin/students/delete/${deleteRollNum}`, {
+        withCredentials: true,
+      });
+      setMsg("Student deleted successfully");
+    } catch (err) {
+      setMsg("");
+      setError(err.response?.data?.message || "Error while deleting student");
+    } finally {
+      setLoading(false);
     }
-    // API call here
-    console.log({
-      rollNumber: deleteRollNumber,
-    });
   };
 
   return (
@@ -115,8 +146,8 @@ export default function UpdateStudent() {
                 fullWidth
                 required
                 margin="normal"
-                value={rollNumber}
-                onChange={(e) => setRollNumber(e.target.value)}
+                value={rollNum}
+                onChange={(e) => setRollNum(e.target.value)}
               />
 
               <Typography variant="subtitle1" sx={{ mt: 1, mb: 1 }}>
@@ -178,6 +209,16 @@ export default function UpdateStudent() {
               >
                 UPDATE
               </Button>
+              {updateMsg && (
+                <Typography color="primary" sx={{ mt: 2 }}>
+                  {updateMsg}
+                </Typography>
+              )}
+              {updateError && (
+                <Typography color="error" sx={{ mt: 2 }}>
+                  {updateError}
+                </Typography>
+              )}
             </CardContent>
           </Card>
         </Grid>
@@ -188,7 +229,7 @@ export default function UpdateStudent() {
             sx={{
               border: "1px solid",
               borderColor: "error.light",
-              minHeight: 320
+              minHeight: 320,
             }}
           >
             <CardContent>
@@ -212,8 +253,8 @@ export default function UpdateStudent() {
                 fullWidth
                 required
                 margin="normal"
-                value={deleteRollNumber}
-                onChange={(e) => setDeleteRollNumber(e.target.value)}
+                value={deleteRollNum}
+                onChange={(e) => setDeleteRollNum(e.target.value)}
               />
 
               <Button
@@ -225,6 +266,16 @@ export default function UpdateStudent() {
               >
                 DELETE STUDENT
               </Button>
+              {msg && (
+                <Typography color="primary" sx={{ mt: 2 }}>
+                  {msg}
+                </Typography>
+              )}
+              {error && (
+                <Typography color="error" sx={{ mt: 2 }}>
+                  {error}
+                </Typography>
+              )}
             </CardContent>
           </Card>
         </Grid>

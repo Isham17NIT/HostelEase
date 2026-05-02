@@ -76,7 +76,13 @@ export const getDashboardStats = asyncHandler(async (req, res) => {
 export const getRecentActivity = asyncHandler(async (req, res) => {
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 10;
-  const activity = await paginate(AdminActivity, {}, { createdAt: -1 }, page, limit);
+  const activity = await paginate(
+    AdminActivity,
+    {},
+    { createdAt: -1 },
+    page,
+    limit
+  );
 
   return res
     .status(200)
@@ -119,18 +125,15 @@ export const getPendingLeaves = asyncHandler(async (req, res) => {
   return res
     .status(200)
     .json(
-      new ApiResponse(
-        200, 
-        pendingLeaves, 
-        "Pending leaves fetched successfully"
-      )
+      new ApiResponse(200, pendingLeaves, "Pending leaves fetched successfully")
     );
 });
 
 export const getPendingRebates = asyncHandler(async (req, res) => {
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 10;
-  const pendingRebates = await paginate(Rebate,
+  const pendingRebates = await paginate(
+    Rebate,
     { status: "PENDING" },
     { createdAt: -1 },
     page,
@@ -272,9 +275,9 @@ export const addRoom = asyncHandler(async (req, res) => {
   }
   const newRoom = await Room.create({ roomNum });
   await AdminActivity.create({
-    type: 'ROOM_ADDED',
-    desc: `${roomNum}`
-  })
+    type: "ROOM_ADDED",
+    desc: `${roomNum}`,
+  });
   return res
     .status(201)
     .json(new ApiResponse(201, newRoom, "Room added successfully"));
@@ -375,7 +378,7 @@ export const registerStudent = asyncHandler(async (req, res) => {
   }
 
   await AdminActivity.create({
-    type: 'STUDENT_ADDED',
+    type: "STUDENT_ADDED",
     desc: "with studentId: ",
     studentID: user.studentID,
   });
@@ -415,21 +418,19 @@ export const deleteStudent = asyncHandler(async (req, res) => {
   }
 
   await AdminActivity.create({
-    type: 'STUDENT_DELETED',
-    desc: 'with studentID:',
-    studentID: student._id
-  })
+    type: "STUDENT_DELETED",
+    desc: "with studentID:",
+    studentID: student._id,
+  });
 
   return res
     .status(200)
     .json(new ApiResponse(200, null, "Student deleted successfully!"));
 });
 
-// -----------------need to check updateStudent-----------------------
-// Todo---> activity creation
 export const updateStudentDetails = asyncHandler(async (req, res) => {
   const { rollNum } = req.params;
-  const fieldsToUpdate = req.body;
+  const updateData = req.body;
 
   if (!rollNum || rollNum.trim() === "") {
     throw new ApiError(400, "Roll number is required!");
@@ -440,13 +441,13 @@ export const updateStudentDetails = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Student not found!");
   }
 
-  if (fieldsToUpdate.roomNum && fieldsToUpdate.roomNum !== student.roomNum) {
+  if (updateData.roomNum && updateData.roomNum !== student.roomNum) {
     const oldRoom = await Room.findOne({ roomNum: student.roomNum });
     if (oldRoom) {
       oldRoom.status = "VACANT";
       await oldRoom.save();
     }
-    const newRoomNum = fieldsToUpdate.roomNum.trim().toLowerCase();
+    const newRoomNum = updateData.roomNum.trim().toLowerCase();
     const newRoom = await Room.findOne({ roomNum: newRoomNum });
     if (!newRoom) {
       throw new ApiError(404, "New room not found.");
@@ -460,14 +461,29 @@ export const updateStudentDetails = asyncHandler(async (req, res) => {
   }
 
   // Update all fields except roomNum
-  Object.keys(fieldsToUpdate).forEach((key) => {
+  Object.keys(updateData).forEach((key) => {
     if (key === "roomNum") return;
-    if (fieldsToUpdate[key] !== undefined) {
-      student[key] = fieldsToUpdate[key];
+    if (updateData[key] !== undefined) {
+      student[key] = updateData[key];
     }
   });
 
   await student.save();
+
+  console.log("updateData", updateData);
+  console.log("student._id", student._id);
+  await AdminActivity.create({
+    type: "STUDENT_UPDATED",
+    desc: "with studentID:",
+    studentID: student._id,
+  });
+  console.log("admin activity created");
+
+  // await AdminActivity.create({
+  //   type: "STUDENT_UPDATED",
+  //   desc: "with studentID:",
+  //   studentID: student._id,
+  // });
 
   return res
     .status(200)
@@ -475,4 +491,3 @@ export const updateStudentDetails = asyncHandler(async (req, res) => {
       new ApiResponse(200, student, "Student details updated successfully!")
     );
 });
-

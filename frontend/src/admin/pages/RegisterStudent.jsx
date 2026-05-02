@@ -120,11 +120,6 @@ export default function RegisterStudent() {
           borderRadius: 3,
         }}
       >
-        {/* <Typography variant="h5" fontWeight="bold">
-          Add New Student
-        </Typography> */}
-
-        {/* <Divider sx={{ my: 2 }} /> */}
 
         {error && (
           <Alert severity="error" sx={{ mb: 2 }}>
