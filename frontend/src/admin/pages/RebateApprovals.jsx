@@ -17,8 +17,11 @@ import {
   useMediaQuery,
   Alert,
   CircularProgress,
-  Pagination, FormControl,
-  InputLabel, Select, MenuItem,
+  Pagination,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
 } from "@mui/material";
 import api from "../../api/axiosInstance";
 
@@ -48,7 +51,7 @@ export default function ManageRebates() {
     setError("");
     try {
       const res = await api.get("/admin/rebates/pending", {
-        params: { limit: limit, page: pageNum },
+        params: { limit, page: pageNum },
         withCredentials: true,
       });
 
@@ -56,9 +59,8 @@ export default function ManageRebates() {
       setPageNum(res.data?.data?.page || pageNum);
       setTotalPages(res.data?.data?.totalPages || 1);
       setLimit(res.data?.data?.limit || (isMobile ? 3 : 5));
-
     } catch (error) {
-      setRebates([]); 
+      setRebates([]);
       setError(
         error.response?.data?.message ||
           "Error while fetching pending complaints",
@@ -92,8 +94,8 @@ export default function ManageRebates() {
     getPendingRebates(pageNum, limit);
   }, [pageNum, limit, isMobile]);
 
-  useEffect(()=>{
-    setLimit(isMobile ? 3 : 5)
+  useEffect(() => {
+    setLimit(isMobile ? 3 : 5);
   }, [isMobile]);
 
   return (
@@ -181,32 +183,44 @@ export default function ManageRebates() {
               </CardContent>
             </Card>
           ))}
-          <Box display="flex" justifyContent="center" mt={3}>
-            <Pagination
-              count={totalPages}
-              page={pageNum}
-              onChange={(e, value) => setPageNum(value)}
-              color="primary"
-            />
-          </Box>
-          {/* Limit Selector */}
-          <Box mb={2} ml={2} display="flex" alignItems="center" gap={2}>
-            <FormControl size="small" sx={{ minWidth: 120 }}>
-              <InputLabel id="limit-label">Rows Per Page</InputLabel>
-              <Select
-                labelId="limit-label"
-                id="limit-select"
-                value={limit}
-                label="Per Page"
-                onChange={(e) => {
-                  setLimit(e.target.value);
-                  setPageNum(1); // Reset to first page when limit changes
-                }}
-              >
-                <MenuItem value={3}>3</MenuItem>
-                <MenuItem value={5}>5</MenuItem>
-              </Select>
-            </FormControl>
+          <Box
+            sx={{
+              px: 3,
+              py: 2,
+              borderTop: "1px solid #e5e7eb",
+              display: "grid",
+              gridTemplateColumns: "1fr auto 1fr",
+              alignItems: "center",
+              flexWrap: "wrap",
+              gap: 2,
+            }}
+          >
+            <Box display="flex" alignItems="center" gap={2}>
+              <FormControl size="small" sx={{ minWidth: 70 }}>
+                <Select
+                  value={limit}
+                  onChange={(e) => {
+                    setLimit(e.target.value);
+                    setPageNum(1);
+                  }}
+                >
+                  <MenuItem value={3}>3</MenuItem>
+                  <MenuItem value={5}>5</MenuItem>
+                </Select>
+              </FormControl>
+            </Box>
+
+            <Box display="flex" justifyContent="center">
+              <Pagination
+                count={totalPages}
+                page={pageNum}
+                onChange={(e, value) => setPageNum(value)}
+                color="primary"
+                shape="rounded"
+              />
+            </Box>
+
+            <Box />
           </Box>
         </Stack>
       ) : (
@@ -286,33 +300,45 @@ export default function ManageRebates() {
               </Table>
             </TableContainer>
           </CardContent>
-          <Box display="flex" justifyContent="center" mt={3}>
-            <Pagination
-              count={totalPages}
-              page={pageNum}
-              onChange={(e, value) => setPageNum(value)}
-              color="primary"
-            />
-          </Box>
-          {/* Limit Selector */}
-          <Box mb={2} ml={2} display="flex" alignItems="center" gap={2}>
-            <FormControl size="small" sx={{ minWidth: 120 }}>
-              <InputLabel id="limit-label">Rows Per Page</InputLabel>
-              <Select
-                labelId="limit-label"
-                id="limit-select"
-                value={limit}
-                label="Per Page"
-                onChange={(e) => {
-                  setLimit(e.target.value);
-                  setPageNum(1); // Reset to first page when limit changes
-                }}
-              >
-                <MenuItem value={3}>3</MenuItem>
-                <MenuItem value={5}>5</MenuItem>
-                <MenuItem value={10}>10</MenuItem>
-              </Select>
-            </FormControl>
+          <Box
+            sx={{
+              px: 3,
+              py: 2,
+              borderTop: "1px solid #e5e7eb",
+              display: "grid",
+              gridTemplateColumns: "1fr auto 1fr",
+              alignItems: "center",
+              flexWrap: "wrap",
+              gap: 2,
+            }}
+          >
+            <Box display="flex" alignItems="center" gap={2}>
+              <Typography variant="body2" color="text.secondary">
+                Rows per page
+              </Typography>
+              <FormControl size="small" sx={{ minWidth: 90 }}>
+                <Select
+                  value={limit}
+                  onChange={(e) => {
+                    setLimit(e.target.value);
+                    setPageNum(1);
+                  }}
+                >
+                  <MenuItem value={3}>3</MenuItem>
+                  <MenuItem value={5}>5</MenuItem>
+                </Select>
+              </FormControl>
+            </Box>
+            <Box display="flex" justifyContent="center">
+              <Pagination
+                count={totalPages}
+                page={pageNum}
+                onChange={(e, value) => setPageNum(value)}
+                color="primary"
+                shape="rounded"
+              />
+            </Box>
+            <Box />
           </Box>
         </Card>
       )}

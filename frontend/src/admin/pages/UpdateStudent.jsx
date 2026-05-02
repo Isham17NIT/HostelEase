@@ -6,7 +6,9 @@ import {
   TextField,
   Button,
   Divider,
-  MenuItem,
+  Grid,
+  Chip,
+  Stack,
 } from "@mui/material";
 import { useState } from "react";
 import api from "../../api/axiosInstance";
@@ -48,7 +50,7 @@ export default function UpdateStudent() {
   // Handle checkbox select/deselect
   const handleFieldSelect = (key) => {
     setSelectedFields((prev) =>
-      prev.includes(key) ? prev.filter((f) => f !== key) : [...prev, key]
+      prev.includes(key) ? prev.filter((f) => f !== key) : [...prev, key],
     );
   };
 
@@ -97,109 +99,136 @@ export default function UpdateStudent() {
         justifyContent: "center",
       }}
     >
-      <Box sx={{ width: "100%", maxWidth: 480 }}>
+      <Grid container spacing={3} alignItems="flex-start">
         {/*  UPDATE CARD  */}
-        <Card sx={{ mb: 4 }}>
-          <CardContent>
-            <Typography variant="h5" fontWeight="bold" gutterBottom>
-              Update Student Details
-            </Typography>
+        <Grid size={{ xs: 12, md: 8 }}>
+          <Card sx={{ display: "flex", flexDirection: "column" }}>
+            <CardContent>
+              <Typography variant="h5" fontWeight="bold" gutterBottom>
+                Update Student Details
+              </Typography>
 
-            <Divider sx={{ mb: 3 }} />
+              <Divider sx={{ mb: 1 }} />
 
-            <TextField
-              label="Student Roll Number"
-              fullWidth
-              required
-              margin="normal"
-              value={rollNumber}
-              onChange={(e) => setRollNumber(e.target.value)}
-            />
+              <TextField
+                label="Student Roll Number"
+                fullWidth
+                required
+                margin="normal"
+                value={rollNumber}
+                onChange={(e) => setRollNumber(e.target.value)}
+              />
 
-            <Typography variant="subtitle1" sx={{ mt: 2, mb: 1 }}>
-              Select fields to update:
-            </Typography>
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', mb: 2 }}>
-              {Object.entries(FIELD_CONFIG).map(([key, config]) => (
-                <label key={key} style={{ marginRight: 16, marginBottom: 8 }}>
-                  <input
-                    type="checkbox"
-                    checked={selectedFields.includes(key)}
-                    onChange={() => handleFieldSelect(key)}
+              <Typography variant="subtitle1" sx={{ mt: 1, mb: 1 }}>
+                Choose which details you want to modify:
+              </Typography>
+              <Stack
+                direction="row"
+                spacing={1}
+                useFlexGap
+                flexWrap="wrap"
+                sx={{ mb: 3 }}
+              >
+                {Object.entries(FIELD_CONFIG).map(([key, config]) => (
+                  <Chip
+                    key={key}
+                    label={config.label}
+                    clickable
+                    color={selectedFields.includes(key) ? "primary" : "default"}
+                    variant={
+                      selectedFields.includes(key) ? "filled" : "outlined"
+                    }
+                    onClick={() => handleFieldSelect(key)}
                   />
-                  {config.label}
-                </label>
-              ))}
-            </Box>
+                ))}
+              </Stack>
 
-            {selectedFields.map((key) => {
-              const config = FIELD_CONFIG[key];
-              return (
-                <TextField
-                  key={key}
-                  label={config.label}
-                  type={config.type}
-                  fullWidth
-                  required
-                  margin="normal"
-                  multiline={config.multiline}
-                  rows={config.rows}
-                  value={fieldValues[key] || ""}
-                  onChange={(e) => handleFieldChange(key, e.target.value)}
-                />
-              );
-            })}
+              <Grid container spacing={2}>
+                {selectedFields.map((key) => {
+                  const config = FIELD_CONFIG[key];
 
-            <Button
-              fullWidth
-              variant="contained"
-              sx={{ mt: 3 }}
-              onClick={handleUpdate}
-            >
-              UPDATE
-            </Button>
-          </CardContent>
-        </Card>
+                  return (
+                    <Grid
+                      key={key}
+                      size={{
+                        xs: 12,
+                        md: config.multiline ? 12 : 6,
+                      }}
+                    >
+                      <TextField
+                        label={config.label}
+                        type={config.type}
+                        fullWidth
+                        required
+                        multiline={config.multiline}
+                        rows={config.rows}
+                        value={fieldValues[key] || ""}
+                        onChange={(e) => handleFieldChange(key, e.target.value)}
+                      />
+                    </Grid>
+                  );
+                })}
+              </Grid>
+
+              <Button
+                fullWidth
+                variant="contained"
+                sx={{ mt: 2 }}
+                onClick={handleUpdate}
+              >
+                UPDATE
+              </Button>
+            </CardContent>
+          </Card>
+        </Grid>
 
         {/* DELETE CARD */}
-        <Card>
-          <CardContent>
-            <Typography
-              variant="h6"
-              fontWeight="bold"
-              color="error"
-              gutterBottom
-            >
-              Delete Student
-            </Typography>
+        <Grid size={{ xs: 12, md: 4 }}>
+          <Card
+            sx={{
+              border: "1px solid",
+              borderColor: "error.light",
+              minHeight: 320
+            }}
+          >
+            <CardContent>
+              <Typography
+                variant="h6"
+                fontWeight="bold"
+                color="error"
+                gutterBottom
+              >
+                Delete Student
+              </Typography>
 
-            <Typography variant="body2" color="text.secondary" mb={2}>
-              This action is irreversible. Please confirm carefully.
-            </Typography>
+              <Typography variant="body2" color="text.secondary" mb={2}>
+                This action is irreversible. Please confirm carefully.
+              </Typography>
 
-            <Divider sx={{ mb: 3 }} />
+              <Divider sx={{ mb: 3 }} />
 
-            <TextField
-              label="Student Roll Number"
-              fullWidth
-              required
-              margin="normal"
-              value={deleteRollNumber}
-              onChange={(e) => setDeleteRollNumber(e.target.value)}
-            />
+              <TextField
+                label="Student Roll Number"
+                fullWidth
+                required
+                margin="normal"
+                value={deleteRollNumber}
+                onChange={(e) => setDeleteRollNumber(e.target.value)}
+              />
 
-            <Button
-              fullWidth
-              variant="contained"
-              color="error"
-              sx={{ mt: 3 }}
-              onClick={handleDelete}
-            >
-              DELETE STUDENT
-            </Button>
-          </CardContent>
-        </Card>
-      </Box>
+              <Button
+                fullWidth
+                variant="contained"
+                color="error"
+                sx={{ mt: 5.5 }}
+                onClick={handleDelete}
+              >
+                DELETE STUDENT
+              </Button>
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
     </Box>
   );
 }

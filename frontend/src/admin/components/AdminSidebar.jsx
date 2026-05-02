@@ -10,14 +10,14 @@ import {
   Typography,
   Switch,
 } from "@mui/material";
-import DashboardIcon from '@mui/icons-material/Dashboard';
-import LogoutIcon from '@mui/icons-material/Logout';
-import NoMealsIcon from '@mui/icons-material/NoMeals';
-import PersonIcon from '@mui/icons-material/Person';
-import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
-import EditDocumentIcon from '@mui/icons-material/EditDocument';
-import MenuBookIcon from '@mui/icons-material/MenuBook';
-import MeetingRoomIcon from '@mui/icons-material/MeetingRoom';
+import DashboardIcon from "@mui/icons-material/Dashboard";
+import LogoutIcon from "@mui/icons-material/Logout";
+import NoMealsIcon from "@mui/icons-material/NoMeals";
+import PersonIcon from "@mui/icons-material/Person";
+import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
+import EditDocumentIcon from "@mui/icons-material/EditDocument";
+import MenuBookIcon from "@mui/icons-material/MenuBook";
+import MeetingRoomIcon from "@mui/icons-material/MeetingRoom";
 
 import { NavLink, useLocation } from "react-router-dom";
 import { useEffect, useContext } from "react";
@@ -31,7 +31,7 @@ const drawerWidth = 240;
 export default function AdminSidebar({ mobileOpen, onClose }) {
   const { mode, toggleTheme } = useThemeMode();
   const location = useLocation();
-  const {setUser} = useContext(UserContext)
+  const { setUser } = useContext(UserContext);
 
   // Auto-close drawer on route change or theme change(mobile only)
   useEffect(() => {
@@ -41,19 +41,51 @@ export default function AdminSidebar({ mobileOpen, onClose }) {
   }, [location.pathname, mode]);
 
   const listContents = [
-    { title: 'Dashboard', icon: <DashboardIcon />, path: '/admin' },
-    { title: 'Leaves', icon: <CalendarMonthIcon />, path: '/admin/leave-approvals' },
-    { title: 'Rebates', icon: <NoMealsIcon />, path: '/admin/rebate-approvals' },
-    { title: 'Complaints', icon: <MenuBookIcon />, path: '/admin/manage-complaints' },
-    { title: 'Add new Student', icon: <PersonIcon/> ,path: '/admin/register-student'},
-    { title: 'Update Student', icon: <EditDocumentIcon/> ,path: '/admin/update-student'},
-    { title: 'Manage Rooms', icon: <MeetingRoomIcon/> ,path: '/admin/manage-rooms'}
-  ]
+    { title: "Dashboard", icon: <DashboardIcon />, path: "/admin" },
+    {
+      title: "Leaves",
+      icon: <CalendarMonthIcon />,
+      path: "/admin/leave-approvals",
+    },
+    {
+      title: "Rebates",
+      icon: <NoMealsIcon />,
+      path: "/admin/rebate-approvals",
+    },
+    {
+      title: "Complaints",
+      icon: <MenuBookIcon />,
+      path: "/admin/manage-complaints",
+    },
+    {
+      title: "Add new Student",
+      icon: <PersonIcon />,
+      path: "/admin/register-student",
+    },
+    {
+      title: "Update Student",
+      icon: <EditDocumentIcon />,
+      path: "/admin/update-student",
+    },
+    {
+      title: "Manage Rooms",
+      icon: <MeetingRoomIcon />,
+      path: "/admin/manage-rooms",
+    },
+  ];
 
   const drawerContent = (
     <>
       {/* HEADER */}
-      <Box sx={{ p: 2, display:"flex", flexDirection: "column", alignItems:"center", justifyContent:"space-evenly"}}>
+      <Box
+        sx={{
+          p: 2,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "space-evenly",
+        }}
+      >
         <Typography variant="h6" fontWeight="bold">
           HostelEase
         </Typography>
@@ -65,12 +97,35 @@ export default function AdminSidebar({ mobileOpen, onClose }) {
       {/* MENU */}
       <List>
         {listContents.map((listElement) => (
-          <ListItem key={listElement.title} disablePadding sx={{ marginBottom: '8px' }}>
-            <ListItemButton component={NavLink} to={listElement.path} sx={{display:"flex", alignItems:"center", justifyContent:"space-between"}}>
+          <ListItem
+            key={listElement.title}
+            disablePadding
+            sx={{ marginBottom: "8px" }}
+          >
+            <ListItemButton
+              component={NavLink}
+              to={listElement.path}
+              end={listElement.path === "/admin"}
+              sx={{
+                "&.active": {
+                  bgcolor: "primary.main",
+                  color: "white",
+                  "& .MuiListItemIcon-root": {
+                    color: "inherit",
+                  },
+                },
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
               <ListItemIcon sx={{ minWidth: 50, color: "text.primary" }}>
                 {listElement.icon}
               </ListItemIcon>
-              <ListItemText primary={listElement.title} sx={{ marginLeft: '-16px' }} />
+              <ListItemText
+                primary={listElement.title}
+                sx={{ marginLeft: "-16px" }}
+              />
             </ListItemButton>
             <Divider />
           </ListItem>
@@ -92,7 +147,7 @@ export default function AdminSidebar({ mobileOpen, onClose }) {
         }}
       >
         <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-          <ListItemText primary="Change Theme" sx={{ml:0}}/>
+          <ListItemText primary="Change Theme" sx={{ ml: 0 }} />
         </Box>
         <Switch checked={mode === "dark"} onChange={toggleTheme} />
       </Box>
@@ -101,9 +156,13 @@ export default function AdminSidebar({ mobileOpen, onClose }) {
 
       {/* LOGOUT */}
       <List>
-        <ListItemButton onClick={()=>logout(setUser)} component={NavLink} to="/login">
+        <ListItemButton
+          onClick={() => logout(setUser)}
+          component={NavLink}
+          to="/login"
+        >
           <ListItemIcon sx={{ minWidth: 50, color: "text.primary" }}>
-            <LogoutIcon/>
+            <LogoutIcon />
           </ListItemIcon>
           <ListItemText primary="Sign Out" />
         </ListItemButton>
@@ -122,7 +181,7 @@ export default function AdminSidebar({ mobileOpen, onClose }) {
         sx={{
           display: { xs: "block", md: "none" },
           [`& .MuiDrawer-paper`]: { width: drawerWidth },
-          height: "100vh"
+          height: "100vh",
         }}
       >
         {drawerContent}
@@ -134,7 +193,7 @@ export default function AdminSidebar({ mobileOpen, onClose }) {
         sx={{
           display: { xs: "none", md: "block" },
           [`& .MuiDrawer-paper`]: { width: drawerWidth },
-          height: "100vh"
+          height: "100vh",
         }}
       >
         {drawerContent}

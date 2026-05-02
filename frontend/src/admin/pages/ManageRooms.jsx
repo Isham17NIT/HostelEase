@@ -83,15 +83,26 @@ export default function ManageRooms() {
     <Box
       sx={{ width: "100%", display: "flex", justifyContent: "center", p: 2 }}
     >
-      <Card sx={{ boxShadow: 3, borderRadius:"10px", minHeight:"250px" }}>
+      <Card
+        sx={{
+          boxShadow: 3,
+          borderRadius: 3,
+          width: "100%",
+          maxWidth: 400,
+          p: 1,
+        }}
+      >
         <CardContent>
           <Typography
             variant="h5"
             fontWeight="bold"
-            mb={3}
+            mb={1}
             textAlign={{ xs: "center", sm: "left" }}
           >
             Room Actions
+          </Typography>
+          <Typography color="text.secondary" sx={{ mb: 3 }}>
+            Check room status or create a new room.
           </Typography>
 
           <Stack spacing={3}>
@@ -108,7 +119,11 @@ export default function ManageRooms() {
               }}
             />
 
-            <Grid container spacing={2}>
+            <Stack
+              direction={{ xs: "column", sm: "row" }}
+              spacing={3}
+              justifyContent="center"
+            >
               <Grid item xs={12} sm={6}>
                 <Button
                   size="large"
@@ -144,7 +159,7 @@ export default function ManageRooms() {
                   Add Room
                 </Button>
               </Grid>
-            </Grid>
+            </Stack>
             {msg && (
               <Typography color="primary" sx={{ mt: 2 }}>
                 {msg}

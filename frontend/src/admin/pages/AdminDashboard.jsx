@@ -11,6 +11,9 @@ import {
   useMediaQuery,
   Alert,
   Pagination,
+  FormControl,
+  Select,
+  MenuItem,
 } from "@mui/material";
 import PeopleIcon from "@mui/icons-material/People";
 import EventIcon from "@mui/icons-material/Event";
@@ -32,6 +35,7 @@ export default function AdminDashboard() {
 
   const isMobile = useMediaQuery("(max-width:768px)");
 
+  const [limit, setLimit] = useState(isMobile ? 3 : 5);
   const [pageNum, setPageNum] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
@@ -67,18 +71,19 @@ export default function AdminDashboard() {
     }
   };
 
-  const getActivities = async (pageNum = 1) => {
+  const getActivities = async (pageNum = 1, limit = isMobile ? 3 : 5) => {
     setActivityError("");
     setActivityLoading(true);
     try {
       const res = await api.get("/admin/dashboard/activity", {
-        params: { limit: isMobile ? 5 : 10, page: pageNum },
+        params: { limit, page: pageNum },
         withCredentials: true,
       });
 
       setActivities(res.data?.data?.results || []);
       setTotalPages(res.data?.data?.totalPages || 1);
       setPageNum(res.data?.data?.page || pageNum);
+      setLimit(res.data?.data?.limit || (isMobile ? 3 : 5));
     } catch (error) {
       setActivityError(
         error.response?.data?.message || "Error while fetching recent activity",
@@ -94,8 +99,12 @@ export default function AdminDashboard() {
   }, []);
 
   useEffect(() => {
-    getActivities(pageNum);
-  }, [pageNum]);
+    getActivities(pageNum, limit);
+  }, [pageNum, limit, isMobile]);
+
+  useEffect(() => {
+    setLimit(isMobile ? 3 : 5);
+  }, [isMobile]);
 
   if (statsLoading) {
     return (
@@ -179,10 +188,12 @@ export default function AdminDashboard() {
             borderRadius: 3,
             bgcolor: isDark ? "#020617" : "#ffffff",
             boxShadow: isDark ? "none" : "0 4px 20px rgba(0,0,0,0.08)",
-            minHeight: "400px",
+            minHeight: "300px",
+            display: "flex",
+            flexDirection: "column",
           }}
         >
-          <CardContent>
+          <CardContent sx={{flexGrow: 1}}>
             <Stack spacing={2}>
               {activities.map((activity) => (
                 <Typography key={activity._id}>
@@ -191,15 +202,47 @@ export default function AdminDashboard() {
               ))}
             </Stack>
           </CardContent>
+          <Box
+            sx={{
+              px: 3,
+              py: 2,
+              borderTop: "1px solid #e5e7eb",
+              display: "grid",
+              gridTemplateColumns: "1fr auto 1fr",
+              alignItems: "center",
+              flexWrap: "wrap",
+              gap: 2,
+            }}
+          >
+            <Box display="flex" alignItems="center" gap={2}>
+              <Typography variant="body2" color="text.secondary">
+                Rows per page
+              </Typography>
+              <FormControl size="small" sx={{ minWidth: 90 }}>
+                <Select
+                  value={limit}
+                  onChange={(e) => {
+                    setLimit(e.target.value);
+                    setPageNum(1);
+                  }}
+                >
+                  <MenuItem value={3}>3</MenuItem>
+                  <MenuItem value={5}>5</MenuItem>
+                </Select>
+              </FormControl>
+            </Box>
+            <Box display="flex" justifyContent="center">
+              <Pagination
+                count={totalPages}
+                page={pageNum}
+                onChange={(e, value) => setPageNum(value)}
+                color="primary"
+                shape="rounded"
+              />
+            </Box>
+            <Box />
+          </Box>
         </Card>
-        <Box display="flex" justifyContent="center" mt={3}>
-          <Pagination
-            count={totalPages}
-            page={pageNum}
-            onChange={(e, value) => setPageNum(value)}
-            color="primary"
-          />
-        </Box>
       </Box>
     </Box>
   );
