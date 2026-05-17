@@ -34,23 +34,16 @@ This project provides a full-stack web application for hostel management, enabli
 
 ## Admin Portal
 
-### Admin Dashboard
 ![Admin Dashboard](./screenshots/admin-dashboard.png)
 
-### Add Student
 ![Add Student](./screenshots/add-student.png)
 
-### Update Student
 ![Update Student](./screenshots/update-student.png)
 
-### Manage Complaints
 ![Manage Complaints](./screenshots/complaints.png)
 
-### Leave Requests
 ![Leave Requests](./screenshots/leaves.png)
 
-### Rebate Requests
 ![Rebate Requests](./screenshots/rebates.png)
 
-### Room Management
 ![Room Management](./screenshots/rooms.png)

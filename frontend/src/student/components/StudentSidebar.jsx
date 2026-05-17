@@ -81,7 +81,7 @@ export default function StudentSidebar({ mobileOpen, onClose }) {
             <ListItemButton
               component={NavLink}
               to={listElement.path}
-              end={listElement.path === "/admin"}
+              end={listElement.path === "/student"}
               sx={{
                 "&.active": {
                   bgcolor: "primary.main",

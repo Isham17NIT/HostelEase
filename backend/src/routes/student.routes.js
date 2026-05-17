@@ -9,10 +9,11 @@ import {
   changePassword,
   applyForRebate,
   applyForLeave,
-  getLeaves,
-  getRebates,
-  getComplaints,
+  // getLeaves,
+  // getRebates,
+  // getComplaints,
   getProfile,
+  getDashboardStats
 } from "../controllers/student.controller.js";
 
 const router = express.Router();
@@ -27,9 +28,10 @@ router.route("/applyRebate").post(applyForRebate);
 router.route("/applyLeave").post(applyForLeave);
 router.route("/changePassword").post(changePassword);
 
-router.route("/leaves").get(getLeaves);
-router.route("/rebates").get(getRebates);
-router.route("/complaints").get(getComplaints);
+// router.route("/leaves").get(getLeaves);
+// router.route("/rebates").get(getRebates);
+// router.route("/complaints").get(getComplaints);
 router.route("/getProfile").get(getProfile);
+router.route("/dashboard/stats").get(getDashboardStats);
 
 export default router;

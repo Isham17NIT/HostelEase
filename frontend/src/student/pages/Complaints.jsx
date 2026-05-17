@@ -52,89 +52,127 @@ export default function Complaints() {
         setMsg("Complaint submitted successfully");
         setFormData({
           type: "",
-          desc: ""
+          desc: "",
         });
       }
     } catch (error) {
-      setError(error.response?.data?.message || "Error while submitting complaint");
+      setError(
+        error.response?.data?.message || "Error while submitting complaint",
+      );
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <Box sx={{ maxWidth: 900 }}>
-      <Typography variant="h5" gutterBottom>
-        Register a Complaint
-      </Typography>
-
-      {error && (
-        <Alert severity="error" sx={{ mb: 2 }}>
-          {error}
-        </Alert>
-      )}
-
-      {msg && (
-        <Box mb={2}>
-          <Typography color="success.main" fontWeight="bold">
-            {msg}
+    <Box sx={{ display: "flex", justifyContent: "center", mt: 2, px: 1 }}>
+      <Paper
+        elevation={4}
+        sx={{
+          width: "100%",
+          maxWidth: 600,
+          p: { xs: 2, md: 4 },
+          borderRadius: 4,
+        }}
+      >
+        <Box mb={3}>
+          <Typography variant="h4" fontWeight="bold" gutterBottom>
+            Register Complaint
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Submit hostel-related issues and track their resolution.
           </Typography>
         </Box>
-      )}
 
-      <Stack spacing={2} sx={{ mb: 4 }}>
-        <FormControl fullWidth>
-          <InputLabel id="complaint-type-label">Complaint Type</InputLabel>
-          <Select
-            labelId="complaint-type-label"
-            label="Complaint Type"
-            onChange={handleChange}
-            required
-            name="type"
-            value={formData.type}
+        {error && (
+          <Alert severity="error" sx={{ mb: 2 }}>
+            {error}
+          </Alert>
+        )}
+
+        {msg && (
+          <Box mb={2}>
+            <Typography color="success.main" fontWeight="bold">
+              {msg}
+            </Typography>
+          </Box>
+        )}
+
+        <Stack spacing={2} sx={{ mb: 0.5 }}>
+          <FormControl
+            fullWidth
+            sx={{
+              "& .MuiOutlinedInput-root": {
+                borderRadius: 3,
+              },
+            }}
           >
-            <MenuItem value="ELECTRICITY">Electricity</MenuItem>
-            <MenuItem value="WATER">Water</MenuItem>
-            <MenuItem value="FURNITURE">Furniture</MenuItem>
-            <MenuItem value="CLEANING">Cleaning</MenuItem>
-            <MenuItem value="INTERNET">WiFi/LAN</MenuItem>
-          </Select>
-        </FormControl>
+            <InputLabel id="complaint-type-label">Complaint Type</InputLabel>
+            <Select
+              labelId="complaint-type-label"
+              label="Complaint Type"
+              onChange={handleChange}
+              required
+              name="type"
+              value={formData.type}
+            >
+              <MenuItem value="ELECTRICITY">Electricity</MenuItem>
+              <MenuItem value="WATER">Water</MenuItem>
+              <MenuItem value="FURNITURE">Furniture</MenuItem>
+              <MenuItem value="CLEANING">Cleaning</MenuItem>
+              <MenuItem value="INTERNET">WiFi/LAN</MenuItem>
+            </Select>
+          </FormControl>
 
-        <TextField
-          label="Complaint Description"
-          fullWidth
-          multiline
-          rows={4}
-          name="desc"
-          value={formData.desc}
-          onChange={handleChange}
-          InputProps={{ maxLength: 200 }}
-          error={formData.desc.length > 200}
-          helperText={`${formData.desc.length}/200 characters`}
-          placeholder="Describe the issue briefly (max 200 characters)"
-          required
-        />
+          <TextField
+            label="Complaint Description"
+            fullWidth
+            multiline
+            rows={4}
+            name="desc"
+            value={formData.desc}
+            onChange={handleChange}
+            InputProps={{ maxLength: 200 }}
+            error={formData.desc.length > 200}
+            helperText={`${formData.desc.length}/200 characters`}
+            placeholder="Describe the issue briefly (max 200 characters)"
+            required
+            sx={{
+              "& .MuiOutlinedInput-root": {
+                borderRadius: 3,
+              },
+            }}
+          />
 
-        <Button
-          variant="contained"
-          sx={{ alignSelf: "flex-start" }}
-          onClick={submitComplaint}
-          disabled={loading || Object.values(formData).some((val) => !val)}
-        >
-          Register Complaint
-        </Button>
-      </Stack>
+          <Button
+            variant="contained"
+            size="large"
+            sx={{
+              alignSelf: "center",
+              px: 10,
+              py: 1.2,
+              // mt: 1,
+              borderRadius: 3,
+              textTransform: "none",
+              fontWeight: "bold",
+              boxShadow: 3,
+            }}
+            onClick={submitComplaint}
+            disabled={loading || Object.values(formData).some((val) => !val)}
+          >
+            Submit
+          </Button>
+        </Stack>
 
-      {/* <Divider sx={{ mb: 3 }} /> */}
+        {/* <Divider sx={{ mb: 3 }} /> */}
 
-      {/* ================= MY COMPLAINTS ================= */}
-      {/* <Typography variant="h5" gutterBottom>
+        {/* ================= MY COMPLAINTS ================= */}
+        {/* <Typography variant="h5" gutterBottom>
         My Complaints
       </Typography> */}
 
-      {/* Header */}
-      {/* <Box
+        {/* Header */}
+        {/* <Box
         sx={{
           display: "grid",
           gridTemplateColumns: "120px 1fr 150px",
@@ -147,10 +185,10 @@ export default function Complaints() {
         <Typography>Category</Typography>
       </Box> */}
 
-      {/* <Divider /> */}
+        {/* <Divider /> */}
 
-      {/* Rows */}
-      {/* {[
+        {/* Rows */}
+        {/* {[
         { id: "CMP001", issue: "Fan not working", status: "Resolved" },
         { id: "CMP002", issue: "Water leakage", status: "In Progress" },
         { id: "CMP003", issue: "Broken chair", status: "Pending" },
@@ -176,8 +214,9 @@ export default function Complaints() {
                 : "default"
             }
           /> */}
-      {/* </Box> */}
-      {/* ))} */}
+        {/* </Box> */}
+        {/* ))} */}
+      </Paper>
     </Box>
   );
 }
